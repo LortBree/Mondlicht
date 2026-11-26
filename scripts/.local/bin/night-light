@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TEMP_K="4200"
+
+if [[ "${1:-}" == "--status" ]]; then
+    if pgrep -x hyprsunset >/dev/null 2>&1; then
+        printf '{"text":"󰖔","class":"active","tooltip":"Night light ON (%sK)"}\n' "${TEMP_K}"
+    else
+        printf '{"text":"󰖨","class":"inactive","tooltip":"Night light OFF"}\n'
+    fi
+    exit 0
+fi
+
+if pgrep -x hyprsunset >/dev/null 2>&1; then
+    pkill -x hyprsunset
+    qs -c mondlicht ipc call shell setNightLight false >/dev/null 2>&1 || true
+else
+    setsid -f hyprsunset -t "${TEMP_K}" </dev/null >/dev/null 2>&1
+    qs -c mondlicht ipc call shell setNightLight true >/dev/null 2>&1 || true
+fi
+
+pkill -RTMIN+8 waybar >/dev/null 2>&1 || true

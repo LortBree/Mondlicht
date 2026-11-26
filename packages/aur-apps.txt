@@ -1,0 +1,5 @@
+# Optional daily & dev applications (AUR)
+brave-bin
+antigravity
+antigravity-cli
+antigravity-ide

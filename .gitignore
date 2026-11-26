@@ -1,0 +1,17 @@
+# Machine-specific generated Hyprland host preset
+hypr/.config/hypr/host.lua
+
+# Generated matugen color files (rebuilt dynamically on wallpaper change)
+hypr/.config/hypr/colors.lua
+hypr/.config/hypr/hyprlock-colors.conf
+fuzzel/.config/fuzzel/colors.ini
+kitty/.config/kitty/colors.conf
+gtk/.config/gtk-3.0/colors.css
+gtk/.config/gtk-4.0/colors.css
+quickshell/.config/quickshell/mondlicht/colors.json
+
+# Generated boot theme build artifacts
+boot/sddm/mondlicht/wallpaper.png
+boot/grub/mondlicht/*.png
+boot/grub/mondlicht/*.pf2
+boot/grub/mondlicht/icons/

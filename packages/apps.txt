@@ -1,0 +1,14 @@
+# Mondlicht desktop apps & developer tools (official Arch repositories)
+dolphin
+ark
+okular
+imv
+mpv
+spotify-launcher
+docker
+docker-buildx
+docker-compose
+cups
+cups-pk-helper
+system-config-printer
+ghostscript

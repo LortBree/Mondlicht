@@ -1,0 +1,34 @@
+[config]
+# Matugen v4.2 non-interactive config for Mondlicht dynamic accents
+source_color_index = 0
+mode = "dark"
+type = "scheme-tonal-spot"
+contrast = 0.25
+
+[templates.hyprland]
+input_path = "~/.config/matugen/templates/hyprland-colors.lua"
+output_path = "~/.config/hypr/colors.lua"
+
+[templates.hyprlock]
+input_path = "~/.config/matugen/templates/hyprlock-colors.conf"
+output_path = "~/.config/hypr/hyprlock-colors.conf"
+
+[templates.fuzzel]
+input_path = "~/.config/matugen/templates/fuzzel-colors.ini"
+output_path = "~/.config/fuzzel/colors.ini"
+
+[templates.kitty]
+input_path = "~/.config/matugen/templates/kitty-colors.conf"
+output_path = "~/.config/kitty/colors.conf"
+
+[templates.gtk3]
+input_path = "~/.config/matugen/templates/gtk-colors.css"
+output_path = "~/.config/gtk-3.0/colors.css"
+
+[templates.gtk4]
+input_path = "~/.config/matugen/templates/gtk-colors.css"
+output_path = "~/.config/gtk-4.0/colors.css"
+
+[templates.quickshell]
+input_path = "~/.config/matugen/templates/quickshell-colors.json"
+output_path = "~/.config/quickshell/mondlicht/colors.json"

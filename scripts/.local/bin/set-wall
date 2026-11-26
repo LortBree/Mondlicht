@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+WALL_DIR="${HOME}/Pictures/Wallpapers"
+CACHE_FILE="${HOME}/.cache/current-wallpaper"
+
+pick_wallpaper() {
+    mkdir -p "${WALL_DIR}"
+    local choices rel
+    choices="$(find "${WALL_DIR}" -maxdepth 2 -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) -printf '%P\n' | sort)"
+    if [[ -z "${choices}" ]]; then
+        timeout 2 notify-send -u critical "Mondlicht" "No wallpapers found in ${WALL_DIR}" >/dev/null 2>&1 || true
+        exit 1
+    fi
+    rel="$(printf '%s\n' "${choices}" | fuzzel --dmenu --prompt " 󰸉 Wallpaper: " || true)"
+    [[ -n "${rel}" ]] && printf '%s/%s\n' "${WALL_DIR}" "${rel}"
+}
+
+IMG="${1:-}"
+if [[ -z "${IMG}" ]]; then
+    if pgrep -x qs >/dev/null 2>&1; then
+        qs -c mondlicht ipc call shell toggleWallpaper >/dev/null 2>&1 && exit 0
+    fi
+    IMG="$(pick_wallpaper || true)"
+    [[ -z "${IMG}" ]] && exit 0
+fi
+
+if [[ ! -f "${IMG}" || ! -r "${IMG}" ]]; then
+    timeout 2 notify-send -u critical "Mondlicht" "Invalid wallpaper: ${IMG}" >/dev/null 2>&1 || true
+    exit 1
+fi
+
+ABS_IMG="$(realpath "${IMG}")"
+
+if ! awww query >/dev/null 2>&1; then
+    setsid -f awww-daemon </dev/null >/dev/null 2>&1
+    sleep 0.5
+fi
+
+awww img "${ABS_IMG}" \
+    --transition-type grow \
+    --transition-pos 0.5,0.5 \
+    --transition-fps 60 \
+    --transition-duration 0.9
+
+matugen image --source-color-index 0 -m dark "${ABS_IMG}"
+
+mkdir -p "$(dirname "${CACHE_FILE}")"
+printf '%s\n' "${ABS_IMG}" > "${CACHE_FILE}"
+
+# Live-reload running desktop components (Quickshell auto-reloads colors.json via FileView)
+pkill -SIGUSR1 kitty >/dev/null 2>&1 || true
+hyprctl reload >/dev/null 2>&1 || true
+if pgrep -x qs >/dev/null 2>&1; then
+    timeout 2 notify-send -a "Mondlicht" "Theme Updated" "$(basename "${ABS_IMG}")" >/dev/null 2>&1 || true
+fi

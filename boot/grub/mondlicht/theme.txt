@@ -1,0 +1,37 @@
+# Mondlicht Dark Minimalist - GRUB2 Theme (2160x1440)
+title-text: ""
+desktop-image: "background.png"
+desktop-color: "#06070B"
+terminal-font: "Geist Mono Regular 16"
+terminal-left: "12%"
+terminal-top: "12%"
+terminal-width: "76%"
+terminal-height: "76%"
+
++ boot_menu {
+    left = 28%
+    width = 44%
+    top = 38%
+    height = 44%
+    item_font = "Geist Regular 26"
+    item_color = "#7C87A6"
+    selected_item_color = "#DCE4F7"
+    item_height = 38
+    item_padding = 24
+    item_spacing = 34
+    icon_width = 0
+    icon_height = 0
+    selected_item_pixmap_style = "select_*.png"
+    scrollbar = false
+}
+
++ label {
+    id = "__timeout__"
+    left = 0
+    top = 84%
+    width = 100%
+    align = "center"
+    text = "Booting in %d s"
+    font = "Geist Mono Regular 16"
+    color = "#7C87A6"
+}

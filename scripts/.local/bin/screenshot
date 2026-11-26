@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MODE="${1:-region}"
+OUT_DIR="${HOME}/Pictures/Screenshots"
+mkdir -p "${OUT_DIR}"
+OUT_FILE="${OUT_DIR}/shot-$(date +%Y%m%d-%H%M%S).png"
+
+case "${MODE}" in
+    region)
+        region="$(slurp || true)"
+        [[ -z "${region}" ]] && exit 0
+        grim -g "${region}" - | satty --filename - --output-filename "${OUT_FILE}"
+        ;;
+    full)
+        grim "${OUT_FILE}"
+        wl-copy < "${OUT_FILE}"
+        notify-send -a "Screenshot" "Fullscreen Saved & Copied" "${OUT_FILE}"
+        ;;
+    *)
+        printf 'Usage: %s [region|full]\n' "$0" >&2
+        exit 2
+        ;;
+esac

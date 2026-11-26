@@ -1,0 +1,3 @@
+# Mondlicht core UI fonts (AUR)
+ttf-geist
+ttf-geist-mono

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if pgrep -x qs >/dev/null 2>&1; then
+    qs -c mondlicht ipc call shell togglePower >/dev/null 2>&1 && exit 0
+fi
+
+choice="$(printf '󰌾  Lock\n󰤄  Suspend\n󰍃  Logout\n󰜉  Reboot\n󰐥  Shutdown\n' | \
+    fuzzel --dmenu --prompt " 󰐥 Power: " --lines 5 --width 22 || true)"
+
+case "${choice}" in
+    *Lock*)     hyprlock ;;
+    *Suspend*)  systemctl suspend ;;
+    *Logout*)   uwsm stop || hyprctl dispatch 'hl.dsp.exit()' ;;
+    *Reboot*)   systemctl reboot ;;
+    *Shutdown*) systemctl poweroff ;;
+    *)          exit 0 ;;
+esac

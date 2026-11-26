@@ -1,0 +1,6 @@
+{
+  "accent": "{{ colors.primary.default.hex }}",
+  "secondary": "{{ colors.tertiary.default.hex }}",
+  "accentFg": "{{ colors.on_primary.default.hex }}",
+  "crit": "{{ colors.error.default.hex }}"
+}

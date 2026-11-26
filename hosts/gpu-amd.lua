@@ -1,0 +1,1 @@
+-- GPU preset: AMD (Mesa open-source stack works out of the box without env overrides)

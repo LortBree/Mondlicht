@@ -1,0 +1,12 @@
+[SddmGreeterTheme]
+Name=Mondlicht
+Description=Minimalist Mondlicht Qt6 theme with clock-first curtain
+Author=Mondlicht
+License=MIT
+Type=sddm-theme
+Version=1.0
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=mondlicht
+Theme-API=2.0
+QtVersion=6
