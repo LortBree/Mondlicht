@@ -66,7 +66,7 @@ MANAGED_PATHS=(
 BACKUP_DIR="${HOME}/.mondlicht-backup-$(date +%Y%m%d-%H%M%S)"
 backed_up=0
 
-for rel in "${MANAGED_PATHS[@]}"; do
+for rel in "${MANAGED_PATHS[@]}" ".config/hypr/hyprland.conf"; do
     target="${HOME}/${rel}"
     if [[ -e "${target}" || -L "${target}" ]]; then
         resolved="$(readlink -f "${target}" 2>/dev/null || true)"

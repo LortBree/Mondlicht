@@ -188,7 +188,7 @@ show_menu() {
     printf '  [2] GPU Preset        : %s (intel | amd | nvidia | hybrid)\n' "${GPU}"
     printf '  [3] Apps Group        : %s (Brave, Antigravity, Spotify, Docker, KDE, CUPS)\n' "$(fmt_on "${WITH_APPS}")"
     printf '  [4] Laptop Utilities  : %s (brightnessctl, smartmontools)\n' "$(fmt_on "${WITH_LAPTOP}")"
-    printf '  [5] AUR Helper        : %s (yay | paru | bootstrap yay-bin | skip)\n' "${AUR_MODE}"
+    printf '  [5] AUR Helper        : %s (yay | paru | skip - auto-bootstraps if missing)\n' "${AUR_MODE}"
     printf '  [6] Boot & Lock Stack : %s (SDDM + Dark GRUB [detected: %s], needs sudo)\n' "$(fmt_on "${WITH_BOOT}")" "${BOOTLOADER}"
     printf '  [7] Dry-Run Mode      : %s\n' "$(fmt_on "${DRY_RUN}")"
     printf -- '------------------------------------------------------------\n'
@@ -276,23 +276,20 @@ if [[ "${AUR_MODE}" == "skip" ]]; then
     printf 'Skipping AUR packages (%s). Note: ttf-geist / ttf-geist-mono are recommended for Mondlicht typography.\n' "${AUR_PKGS[*]}"
 else
     aur_bin="${AUR_MODE}"
-    if [[ "${AUR_MODE}" == "bootstrap" ]]; then
-        aur_bin="yay"
-        if ! command -v yay >/dev/null 2>&1; then
-            run_cmd sudo pacman -S --needed --noconfirm git base-devel
-            if [[ "${DRY_RUN}" -eq 1 ]]; then
-                printf '[DRY-RUN] git clone https://aur.archlinux.org/yay-bin.git <tmp>/yay-bin && makepkg -si --needed --noconfirm\n'
-            else
-                TMP_YAY="$(mktemp -d)"
-                trap 'rm -rf "${TMP_YAY}"' EXIT
-                git clone --depth=1 https://aur.archlinux.org/yay-bin.git "${TMP_YAY}/yay-bin"
-                (cd "${TMP_YAY}/yay-bin" && makepkg -si --needed --noconfirm)
-                rm -rf "${TMP_YAY}"
-            fi
+    [[ "${aur_bin}" == "bootstrap" ]] && aur_bin="yay"
+    if ! command -v "${aur_bin}" >/dev/null 2>&1; then
+        printf 'AUR helper "%s" not found; bootstrapping %s-bin...\n' "${aur_bin}" "${aur_bin}"
+        run_cmd sudo pacman -S --needed --noconfirm git base-devel
+        if [[ "${DRY_RUN}" -eq 1 ]]; then
+            printf '[DRY-RUN] git clone https://aur.archlinux.org/%s-bin.git <tmp>/%s-bin && makepkg -si --needed --noconfirm\n' "${aur_bin}" "${aur_bin}"
+        else
+            TMP_AUR="$(mktemp -d)"
+            trap 'rm -rf "${TMP_AUR}"' EXIT
+            git clone --depth=1 "https://aur.archlinux.org/${aur_bin}-bin.git" "${TMP_AUR}/${aur_bin}-bin"
+            (cd "${TMP_AUR}/${aur_bin}-bin" && makepkg -si --needed --noconfirm)
+            rm -rf "${TMP_AUR}"
+            trap - EXIT
         fi
-    elif ! command -v "${aur_bin}" >/dev/null 2>&1; then
-        printf 'AUR helper "%s" not found; pass --aur bootstrap or install %s first.\n' "${aur_bin}" "${aur_bin}" >&2
-        exit 1
     fi
     run_cmd "${aur_bin}" -S --needed --noconfirm "${AUR_PKGS[@]}"
 fi
