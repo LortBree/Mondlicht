@@ -8,6 +8,7 @@ import Quickshell.Services.Pipewire
 PanelWindow {
     id: win
     required property var shell
+    screen: win.shell.focusedScreen
 
     anchors {
         bottom: true

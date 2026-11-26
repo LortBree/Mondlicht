@@ -7,6 +7,7 @@ import Quickshell.Io
 PanelWindow {
     id: win
     required property var shell
+    screen: win.shell.targetScreen
 
     // Fullscreen transparent click-outside catcher (no persistent top-left hover intercept)
     anchors {

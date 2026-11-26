@@ -7,7 +7,39 @@ import Quickshell.Services.Notifications
 ShellRoot {
     id: root
 
-    readonly property bool desktopEmpty: !Hyprland.focusedWorkspace || Hyprland.focusedWorkspace.toplevels.values.length === 0
+    function isScreenEmpty(scr) {
+        if (!scr) return false;
+        const mon = Hyprland.monitorFor(scr);
+        if (!mon || !mon.activeWorkspace) return true;
+        return mon.activeWorkspace.toplevels.values.length === 0;
+    }
+
+    readonly property var focusedScreen: {
+        const fm = Hyprland.focusedMonitor;
+        const screens = Quickshell.screens;
+        if (fm) {
+            for (let i = 0; i < screens.length; i++) {
+                if (screens[i].name === fm.name) return screens[i];
+            }
+        }
+        return screens.length > 0 ? screens[0] : null;
+    }
+
+    // Prefer focused monitor if empty desktop; otherwise hand off ambient panels to another empty monitor
+    readonly property var ambientScreen: {
+        void Hyprland.workspaces.values.length;
+        void Hyprland.toplevels.values.length;
+        if (root.isScreenEmpty(root.focusedScreen)) return root.focusedScreen;
+        const screens = Quickshell.screens;
+        for (let i = 0; i < screens.length; i++) {
+            if (root.isScreenEmpty(screens[i])) return screens[i];
+        }
+        return null;
+    }
+
+    readonly property bool desktopEmpty: ambientScreen !== null
+    property var modalScreen: null
+    readonly property var targetScreen: modalScreen || focusedScreen
 
     property bool clockOpen: false
     property bool overviewOpen: false
@@ -28,7 +60,8 @@ ShellRoot {
     property var toastItems: []
     readonly property alias notifModel: notifServer.trackedNotifications
 
-    function openOnly(panel) {
+    function openOnly(panel, preferredScreen) {
+        if (panel) root.modalScreen = preferredScreen || root.focusedScreen || root.ambientScreen;
         root.clockOpen = (panel === "clock") ? !root.clockOpen : false;
         root.overviewOpen = (panel === "overview") ? !root.overviewOpen : false;
         root.quickSettingsOpen = (panel === "quickSettings") ? !root.quickSettingsOpen : false;
@@ -119,13 +152,23 @@ ShellRoot {
         function closeAll(): void { root.openOnly(""); }
     }
 
-    TopCapsule { shell: root }
+    Variants {
+        model: Quickshell.screens
+
+        Scope {
+            id: screenScope
+            required property var modelData
+
+            TopCapsule { shell: root; screen: screenScope.modelData }
+            LeftWorkspaces { shell: root; screen: screenScope.modelData }
+            StatusSidebar { shell: root; screen: screenScope.modelData }
+            BottomDock { shell: root; screen: screenScope.modelData }
+        }
+    }
+
     ClockPopover { shell: root }
-    LeftWorkspaces { shell: root }
-    StatusSidebar { shell: root }
     QuickSettingsPanel { shell: root }
     NotificationCenter { shell: root }
-    BottomDock { shell: root }
     AppLauncher { shell: root }
     WallpaperPicker { shell: root }
     PowerMenu { shell: root }

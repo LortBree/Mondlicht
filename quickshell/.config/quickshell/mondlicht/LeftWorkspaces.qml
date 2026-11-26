@@ -16,7 +16,7 @@ PanelWindow {
     }
 
     property bool activeHover: false
-    readonly property bool revealed: activeHover || win.shell.overviewOpen
+    readonly property bool revealed: activeHover || (win.shell.overviewOpen && win.screen === win.shell.targetScreen)
 
     // Fixed window dimensions + Region mask prevents pointer-leave resize flicker
     implicitWidth: 64
@@ -116,7 +116,7 @@ PanelWindow {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: win.shell.openOnly("overview")
+                        onClicked: win.shell.openOnly("overview", win.screen)
                     }
                 }
 

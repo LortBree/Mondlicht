@@ -10,6 +10,7 @@ Scope {
     // 1. Floating Top-Right Toasts
     PanelWindow {
         id: toastWin
+        screen: root.shell.ambientScreen || root.shell.focusedScreen
         anchors {
             top: true
             right: true
@@ -108,6 +109,7 @@ Scope {
     // 2. Notification Center Drawer (click outside to dismiss)
     PanelWindow {
         id: drawerWin
+        screen: root.shell.targetScreen
 
         anchors {
             top: true

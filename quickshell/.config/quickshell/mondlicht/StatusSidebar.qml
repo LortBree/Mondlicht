@@ -19,7 +19,7 @@ PanelWindow {
     }
 
     property bool activeHover: false
-    readonly property bool revealed: activeHover || win.shell.quickSettingsOpen || win.shell.notifOpen || win.shell.overviewOpen
+    readonly property bool revealed: activeHover || ((win.shell.quickSettingsOpen || win.shell.notifOpen || win.shell.overviewOpen) && win.screen === win.shell.targetScreen)
 
     // Fixed window bounds + Region mask prevents pointer-leave resize flicker
     implicitWidth: 68
@@ -211,7 +211,7 @@ PanelWindow {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: win.shell.openOnly("quickSettings")
+                        onClicked: win.shell.openOnly("quickSettings", win.screen)
                     }
                 }
 
@@ -246,7 +246,7 @@ PanelWindow {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: win.shell.openOnly("notif")
+                        onClicked: win.shell.openOnly("notif", win.screen)
                     }
                 }
 

@@ -16,8 +16,8 @@ PanelWindow {
     }
 
     property bool activeHover: false
-    readonly property bool hiddenByDrawer: win.shell.clockOpen
-    readonly property bool revealed: !hiddenByDrawer && (activeHover || win.shell.desktopEmpty)
+    readonly property bool hiddenByDrawer: win.shell.clockOpen && win.screen === win.shell.targetScreen
+    readonly property bool revealed: !hiddenByDrawer && (activeHover || win.screen === win.shell.ambientScreen)
 
     // Fixed window bounds + Region mask prevents Wayland resize pointer-leave flicker
     implicitWidth: Math.max(220, pill.implicitWidth + 24)
@@ -176,7 +176,7 @@ PanelWindow {
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
-            onClicked: win.shell.openOnly("clock")
+            onClicked: win.shell.openOnly("clock", win.screen)
         }
     }
     }

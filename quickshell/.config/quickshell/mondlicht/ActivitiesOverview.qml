@@ -7,6 +7,7 @@ import Quickshell.Hyprland
 PanelWindow {
     id: win
     required property var shell
+    screen: win.shell.targetScreen
 
     anchors {
         top: true

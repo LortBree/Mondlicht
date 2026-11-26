@@ -6,6 +6,7 @@ import Quickshell.Wayland
 PanelWindow {
     id: win
     required property var shell
+    screen: win.shell.targetScreen
 
     anchors {
         top: true

@@ -15,7 +15,7 @@ PanelWindow {
     }
 
     property bool activeHover: false
-    readonly property bool revealed: activeHover || win.shell.overviewOpen || win.shell.desktopEmpty
+    readonly property bool revealed: activeHover || (win.shell.overviewOpen && win.screen === win.shell.targetScreen) || (win.screen === win.shell.ambientScreen)
 
     // Fixed window bounds + Region input mask eliminates Wayland resize pointer-leave flicker
     implicitWidth: Math.max(360, dockBox.implicitWidth + 24)
@@ -263,7 +263,7 @@ PanelWindow {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: win.shell.openOnly("wallpaper")
+                        onClicked: win.shell.openOnly("wallpaper", win.screen)
                     }
                 }
 
@@ -285,7 +285,7 @@ PanelWindow {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: win.shell.openOnly("launcher")
+                        onClicked: win.shell.openOnly("launcher", win.screen)
                     }
                 }
             }

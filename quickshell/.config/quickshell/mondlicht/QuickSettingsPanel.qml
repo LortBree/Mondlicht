@@ -10,6 +10,7 @@ import Quickshell.Services.UPower
 PanelWindow {
     id: win
     required property var shell
+    screen: win.shell.targetScreen
 
     // Fullscreen transparent click-outside catcher (no X close button)
     anchors {
@@ -667,7 +668,7 @@ PanelWindow {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: win.shell.openOnly("wallpaper")
+                        onClicked: win.shell.openOnly("wallpaper", win.screen)
                     }
                 }
             }
@@ -826,7 +827,7 @@ PanelWindow {
                     HoverHandler { id: guideHov; cursorShape: Qt.PointingHandCursor }
                     MouseArea {
                         anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-                        onClicked: win.shell.openOnly("guide")
+                        onClicked: win.shell.openOnly("guide", win.screen)
                     }
                 }
 
@@ -850,7 +851,7 @@ PanelWindow {
                     HoverHandler { id: pwrHov; cursorShape: Qt.PointingHandCursor }
                     MouseArea {
                         anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-                        onClicked: win.shell.openOnly("power")
+                        onClicked: win.shell.openOnly("power", win.screen)
                     }
                 }
             }

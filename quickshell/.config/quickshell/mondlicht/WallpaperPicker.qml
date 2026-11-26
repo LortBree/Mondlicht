@@ -7,6 +7,7 @@ import Quickshell.Io
 PanelWindow {
     id: win
     required property var shell
+    screen: win.shell.targetScreen
 
     anchors {
         top: true

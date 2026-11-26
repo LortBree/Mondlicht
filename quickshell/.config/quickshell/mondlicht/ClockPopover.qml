@@ -8,6 +8,7 @@ import Quickshell.Services.Mpris
 PanelWindow {
     id: win
     required property var shell
+    screen: win.shell.targetScreen
 
     // Fullscreen transparent catcher so clicking anywhere outside closes drawer & restores capsule
     anchors {
