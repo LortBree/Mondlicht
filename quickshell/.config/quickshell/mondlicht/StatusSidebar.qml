@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
+import Quickshell.Bluetooth
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
 import Quickshell.Services.SystemTray
@@ -33,16 +34,21 @@ PanelWindow {
         item: win.revealed ? fullArea : edgeSensor
     }
 
+    property bool hasWifi: true
     property bool wifiEnabled: true
-    property bool btPowered: true
+    property bool ethConnected: false
+    readonly property bool hasBluetooth: Bluetooth.defaultAdapter !== null
+    readonly property bool btPowered: Bluetooth.defaultAdapter ? Bluetooth.defaultAdapter.enabled : false
 
     PwObjectTracker {
-        objects: [Pipewire.defaultAudioSink]
+        objects: [Pipewire.defaultAudioSink, Pipewire.defaultAudioSource]
     }
 
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property bool muted: sink && sink.audio ? sink.audio.muted : false
     readonly property int volPct: sink && sink.audio ? Math.round(sink.audio.volume * 100) : 0
+    readonly property var mic: Pipewire.defaultAudioSource
+    readonly property bool micMuted: mic && mic.audio ? mic.audio.muted : false
     readonly property int batPct: UPower.displayDevice && UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : -1
     readonly property bool batCharging: UPower.displayDevice && UPower.displayDevice.state === UPowerDeviceState.Charging
 
@@ -55,12 +61,19 @@ PanelWindow {
 
     Process {
         id: stateProc
-        command: ["sh", "-c", "printf '%s|%s\n' \"$(nmcli radio wifi 2>/dev/null || echo enabled)\" \"$(bluetoothctl show 2>/dev/null | awk '/Powered:/{print $2; exit}')\""]
+        command: [
+            "sh", "-c",
+            "HAS_WIFI=$(nmcli -t -f TYPE dev 2>/dev/null | grep -qx wifi && echo 1 || (ls -d /sys/class/net/*/wireless >/dev/null 2>&1 && echo 1 || echo 0)); " +
+            "WIFI_EN=$(nmcli radio wifi 2>/dev/null || echo disabled); " +
+            "ETH_CONN=$(nmcli -t -f TYPE,STATE dev 2>/dev/null | grep -q '^ethernet:connected$' && echo 1 || echo 0); " +
+            "printf '%s|%s|%s\n' \"$WIFI_EN\" \"$HAS_WIFI\" \"$ETH_CONN\""
+        ]
         stdout: StdioCollector {
             onStreamFinished: {
                 const parts = text.trim().split("|");
                 win.wifiEnabled = (parts[0] === "enabled");
-                win.btPowered = (parts[1] === "yes");
+                win.hasWifi = (parts[1] === "1");
+                win.ethConnected = (parts[2] === "1");
             }
         }
     }
@@ -152,18 +165,38 @@ PanelWindow {
 
                         Text {
                             Layout.alignment: Qt.AlignHCenter
-                            text: win.wifiEnabled ? "󰖩" : "󰖪"
-                            color: win.wifiEnabled ? Theme.text : Theme.muted
+                            text: win.hasWifi ? (win.wifiEnabled ? "󰖩" : "󰖪") : (win.ethConnected ? "󰈀" : "󰈂")
+                            color: (win.hasWifi ? win.wifiEnabled : win.ethConnected) ? Theme.text : Theme.muted
                             font.family: Theme.fontMono
                             font.pixelSize: 19
                         }
 
                         Text {
+                            visible: win.hasBluetooth
                             Layout.alignment: Qt.AlignHCenter
                             text: win.btPowered ? "󰂯" : "󰂲"
                             color: win.btPowered ? Theme.text : Theme.muted
                             font.family: Theme.fontMono
                             font.pixelSize: 19
+                        }
+
+                        Item {
+                            visible: !win.hasBluetooth && win.mic !== null
+                            Layout.alignment: Qt.AlignHCenter
+                            width: 30
+                            height: 24
+                            Text {
+                                anchors.centerIn: parent
+                                text: win.micMuted ? "󰍭" : "󰍬"
+                                color: win.micMuted ? Theme.crit : Theme.text
+                                font.family: Theme.fontMono
+                                font.pixelSize: 19
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: Quickshell.execDetached(["wpctl", "set-mute", "@DEFAULT_AUDIO_SOURCE@", "toggle"])
+                            }
                         }
 
                         Item {

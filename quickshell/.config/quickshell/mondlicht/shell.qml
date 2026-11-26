@@ -53,6 +53,7 @@ ShellRoot {
     property bool powerOpen: false
     property bool guideOpen: false
     property bool nightLightOn: false
+    property bool keepAwakeOn: false
     property bool dndOn: false
     property string osdKind: "volume"
     property int osdToken: 0
