@@ -41,6 +41,7 @@ check "QuickSettingsPanel supports optional backlight" bash -c "grep -q 'hasBack
 check "hyprland.lua loads optional host module via pcall" bash -c "grep -q 'pcall(require, \"host\")' '${DOTFILES_DIR}/hypr/.config/hypr/hyprland.lua' && ! grep -q 'eDP-1' '${DOTFILES_DIR}/hypr/.config/hypr/hyprland.lua'"
 LEAK_PATTERN='/home/''bree|"br''ee"|obsidian-''luna|Rei-''Obsidian|is''kra|ис''кра'
 check "No personal path or legacy leaks" bash -c "! grep -rn -iE '${LEAK_PATTERN}' '${DOTFILES_DIR}' --exclude-dir=.git --exclude='*.png' --exclude='*.pf2'"
+check "No unguarded printf leading dash" bash -c "! grep -rn \"printf[[:space:]]\\+['\\\"]-\" '${DOTFILES_DIR}' --exclude-dir=.git --exclude=test-dotfiles.sh"
 
 for hostfile in pc-standard laptop-standard laptop-hidpi gpu-intel gpu-amd gpu-nvidia gpu-hybrid; do
     check "host preset ${hostfile}.lua" test -s "${DOTFILES_DIR}/hosts/${hostfile}.lua"
