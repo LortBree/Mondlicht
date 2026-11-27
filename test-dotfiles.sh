@@ -24,6 +24,7 @@ check() {
 for shfile in \
     "${DOTFILES_DIR}/install.sh" \
     "${DOTFILES_DIR}/apply.sh" \
+    "${DOTFILES_DIR}/theme-apply.sh" \
     "${DOTFILES_DIR}/test-dotfiles.sh" \
     "${DOTFILES_DIR}/boot/build-grub-assets.sh" \
     "${DOTFILES_DIR}/boot/install-boot.sh" \
@@ -61,6 +62,7 @@ done
 
 check "install.sh --dry-run (pc-standard + nvidia + tuning)" "${DOTFILES_DIR}/install.sh" --profile pc-standard --gpu nvidia --with-apps --with-tuning --with-boot --dry-run --yes
 check "install.sh --dry-run (laptop-hidpi + intel + no-tuning)" "${DOTFILES_DIR}/install.sh" --profile laptop-hidpi --gpu intel --with-apps --no-tuning --dry-run --yes
+check "theme-apply.sh --dry-run excludes panel & hyprland" bash -c "grep -q '^THEME_PACKAGES=.*gtk qt matugen spotify kitty fuzzel btop fastfetch' '${DOTFILES_DIR}/theme-apply.sh' && ! grep '^THEME_PACKAGES=' '${DOTFILES_DIR}/theme-apply.sh' | grep -qE 'quickshell|hypr|systemd' && '${DOTFILES_DIR}/theme-apply.sh' --dry-run >/dev/null"
 
 if [[ "${REPO_ONLY}" -eq 0 ]]; then
     for asset in background.png geist_26.pf2 geist_mono_16.pf2 select_nw.png select_n.png select_ne.png select_w.png select_c.png select_e.png select_sw.png select_s.png select_se.png; do

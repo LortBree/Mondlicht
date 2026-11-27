@@ -74,6 +74,12 @@ After pulling updates from GitHub:
 cd ~/Mondlicht && git pull && ./apply.sh
 ```
 
+To install only global themes + packages (Dolphin/Qt, Spicetify, GTK, Matugen, Kitty, Fuzzel, Btop) without overwriting your custom panel, Hyprland, or systemd configs:
+
+```bash
+./theme-apply.sh
+```
+
 `apply.sh` safely backs up any conflicting non-symlink files into `~/.mondlicht-backup-<timestamp>/` before running GNU Stow.
 
 ## Essential Keybindings
@@ -102,6 +108,7 @@ cd ~/Mondlicht && git pull && ./apply.sh
 Mondlicht/
 ├── install.sh              # Interactive + scripted Arch installer (7 phases)
 ├── apply.sh                # GNU Stow symlink sync + safe conflict backup + reload
+├── theme-apply.sh          # Panel-safe theme + package installer (Qt/Dolphin, Spicetify, GTK, etc.)
 ├── test-dotfiles.sh        # Repo/CLI self-checks (--repo-only) and live checks
 ├── packages/               # Modular native & AUR package lists
 ├── hosts/                  # Monitor profiles & GPU environment presets
