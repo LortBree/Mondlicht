@@ -27,8 +27,8 @@ PanelWindow {
 
     readonly property bool revealed: activeHover || ctxOpen || (win.shell.overviewOpen && win.screen === win.shell.targetScreen) || (win.screen === win.shell.ambientScreen)
 
-    // Fixed window bounds + Region input mask avoids Wayland resize flicker while keeping headroom click-through
-    implicitWidth: Math.max(460, dockBox.implicitWidth + 140)
+    // Fixed Wayland layer-surface size + un-animated Region mask eliminates resize buffer stutter
+    implicitWidth: win.screen ? Math.min(win.screen.width, 960) : 960
     implicitHeight: 184
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
@@ -135,7 +135,7 @@ PanelWindow {
                 bottom: parent.bottom
                 horizontalCenter: parent.horizontalCenter
             }
-            width: Math.max(360, dockBox.implicitWidth + 24)
+            width: Math.max(360, dockRow.implicitWidth + 48)
             height: 6
         }
 
@@ -145,7 +145,7 @@ PanelWindow {
                 bottom: parent.bottom
                 horizontalCenter: parent.horizontalCenter
             }
-            width: Math.max(360, dockBox.implicitWidth + 24)
+            width: Math.max(360, dockRow.implicitWidth + 48)
             height: 82
         }
 
@@ -241,6 +241,7 @@ PanelWindow {
                         onClicked: {
                             if (win.ctxToplevel) win.ctxToplevel.activate();
                             win.ctxOpen = false;
+                            win.ctxToplevel = null;
                         }
                     }
                 }
@@ -264,6 +265,7 @@ PanelWindow {
                         onClicked: {
                             win.launchNewInstance(win.ctxDesktopId, win.ctxCmd);
                             win.ctxOpen = false;
+                            win.ctxToplevel = null;
                         }
                     }
                 }
@@ -287,6 +289,7 @@ PanelWindow {
                         onClicked: {
                             if (win.ctxToplevel) win.ctxToplevel.close();
                             win.ctxOpen = false;
+                            win.ctxToplevel = null;
                         }
                     }
                 }
