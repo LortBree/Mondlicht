@@ -29,13 +29,9 @@ PanelWindow {
 
     property string page: "main" // "main" | "wifi" | "bluetooth" | "audio"
 
-    property bool hasWifi: true
     property bool wifiOn: true
     property string wifiSsid: "Wi-Fi"
-    property bool ethConnected: false
-    property string ethIp: ""
     property int brightPct: 80
-    property bool hasBacklight: false
 
     property var wifiNetworks: []
     property bool wifiScanning: false
@@ -46,7 +42,6 @@ PanelWindow {
     property bool wifiShowPass: false
 
     readonly property var btAdapter: Bluetooth.defaultAdapter
-    readonly property bool hasBluetooth: btAdapter !== null
     readonly property bool btOn: btAdapter ? btAdapter.enabled : false
     readonly property string btSubtitle: {
         if (!btOn) return "Off";
@@ -64,9 +59,6 @@ PanelWindow {
     readonly property bool audioMuted: sink && sink.audio ? sink.audio.muted : false
     readonly property int audioPct: sink && sink.audio ? Math.round(sink.audio.volume * 100) : 0
     readonly property string audioLabel: sink ? (sink.description || sink.nickname || sink.name || "Speaker") : "No output"
-    readonly property var mic: Pipewire.defaultAudioSource
-    readonly property bool micMuted: mic && mic.audio ? mic.audio.muted : false
-    readonly property int micPct: mic && mic.audio ? Math.round(mic.audio.volume * 100) : 0
     readonly property int batPct: UPower.displayDevice && UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : -1
     readonly property bool batCharging: UPower.displayDevice && UPower.displayDevice.state === UPowerDeviceState.Charging
 
@@ -168,16 +160,12 @@ PanelWindow {
         id: refreshProc
         command: [
             "sh", "-c",
-            "HAS_WIFI=$(nmcli -t -f TYPE dev 2>/dev/null | grep -qx wifi && echo 1 || (ls -d /sys/class/net/*/wireless >/dev/null 2>&1 && echo 1 || echo 0)); " +
-            "ETH_DEV=$(nmcli -t -f DEVICE,TYPE,STATE dev 2>/dev/null | awk -F: '$2==\"ethernet\" && $3==\"connected\"{print $1; exit}'); " +
-            "ETH_CONN=$([ -n \"$ETH_DEV\" ] && echo 1 || echo 0); " +
-            "ETH_IP=$([ -n \"$ETH_DEV\" ] && ip -4 -o addr show dev \"$ETH_DEV\" 2>/dev/null | awk '{sub(/\\/.*/,\"\",$4); print $4; exit}' || true); " +
-            "IDLE_ON=$(pgrep -x hypridle >/dev/null 2>&1 && echo 1 || echo 0); " +
-            "printf '%s|%s|%s|%s|%s|%s|%s\\n' " +
-            "\"$(nmcli radio wifi 2>/dev/null || echo disabled)\" " +
+            "printf '%s|%s|%s|%s|%s\n' " +
+            "\"$(nmcli radio wifi 2>/dev/null || echo enabled)\" " +
             "\"$(nmcli -t -f ACTIVE,SSID dev wifi 2>/dev/null | awk -F: '$1==\"yes\"{print $2; exit}')\" " +
             "\"$(brightnessctl -m 2>/dev/null | awk -F, '{gsub(/%/,\"\",$4); print $4}')\" " +
-            "\"$HAS_WIFI\" \"$ETH_CONN\" \"$ETH_IP\" \"$IDLE_ON\""
+            "\"$(pgrep -x hypridle >/dev/null 2>&1 && echo 1 || echo 0)\" " +
+            "\"$(pgrep -x wf-recorder >/dev/null 2>&1 && echo 1 || echo 0)\""
         ]
         stdout: StdioCollector {
             onStreamFinished: {
@@ -185,17 +173,14 @@ PanelWindow {
                 win.wifiOn = (p[0] === "enabled");
                 win.wifiSsid = p[1] ? p[1] : (win.wifiOn ? "Disconnected" : "Off");
                 const b = parseInt(p[2], 10);
-                win.hasBacklight = !isNaN(b);
                 if (!isNaN(b)) win.brightPct = b;
-                win.hasWifi = (p[3] === "1");
-                win.ethConnected = (p[4] === "1");
-                win.ethIp = p[5] || "";
-                win.shell.keepAwakeOn = (p[6] === "0");
+                if (p.length >= 5) {
+                    win.shell.keepAwakeOn = (p[3] === "0");
+                    win.shell.recordingOn = (p[4] === "1");
+                }
             }
         }
     }
-
-    Component.onCompleted: refreshProc.running = true
 
     Process {
         id: wifiListProc
@@ -390,7 +375,7 @@ PanelWindow {
             rightMargin: 70
         }
         width: 364
-        height: 456
+        height: 504
         radius: 14
         color: Theme.voidBg
         border.width: 1
@@ -451,9 +436,8 @@ PanelWindow {
                 rowSpacing: 8
                 columnSpacing: 8
 
-                // 1. Wi-Fi (Laptop / wireless adapter)
+                // 1. Wi-Fi
                 Rectangle {
-                    visible: win.hasWifi
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
                     radius: 10
@@ -517,66 +501,8 @@ PanelWindow {
                     }
                 }
 
-                // 1b. Keep Awake / Caffeine (PC without Wi-Fi)
+                // 2. Bluetooth
                 Rectangle {
-                    visible: !win.hasWifi
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 60
-                    radius: 10
-                    color: win.shell.keepAwakeOn ? Theme.accent : Theme.glassBg
-                    border.width: 1
-                    border.color: win.shell.keepAwakeOn ? Theme.accent : Theme.rim
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.margins: 10
-                        spacing: 8
-                        Text {
-                            text: win.shell.keepAwakeOn ? "󰅶" : "󰛊"
-                            color: win.shell.keepAwakeOn ? Theme.accentFg : Theme.text
-                            font.family: Theme.fontMono
-                            font.pixelSize: 19
-                        }
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 1
-                            Text {
-                                text: "Keep Awake"
-                                color: win.shell.keepAwakeOn ? Theme.accentFg : Theme.text
-                                font.family: Theme.fontSans
-                                font.pixelSize: 12
-                                font.weight: Font.DemiBold
-                            }
-                            Text {
-                                Layout.fillWidth: true
-                                text: win.shell.keepAwakeOn ? "Awake" : "Auto sleep"
-                                color: win.shell.keepAwakeOn ? Theme.accentFg : Theme.muted
-                                opacity: 0.82
-                                font.family: Theme.fontSans
-                                font.pixelSize: 10
-                                elide: Text.ElideRight
-                            }
-                        }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            win.shell.keepAwakeOn = !win.shell.keepAwakeOn;
-                            Quickshell.execDetached([
-                                "sh", "-c",
-                                win.shell.keepAwakeOn
-                                    ? "systemctl --user stop hypridle.service >/dev/null 2>&1 || pkill -x hypridle >/dev/null 2>&1 || true"
-                                    : "systemctl --user start hypridle.service >/dev/null 2>&1 || pgrep -x hypridle >/dev/null 2>&1 || setsid -f hypridle </dev/null >/dev/null 2>&1"
-                            ]);
-                        }
-                    }
-                }
-
-                // 2. Bluetooth (shown when Bluetooth adapter exists)
-                Rectangle {
-                    visible: win.hasBluetooth
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
                     radius: 10
@@ -633,57 +559,6 @@ PanelWindow {
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             if (win.btAdapter) win.btAdapter.enabled = !win.btAdapter.enabled;
-                        }
-                    }
-                }
-
-                // 2b. Microphone Mute (PC without Bluetooth)
-                Rectangle {
-                    visible: !win.hasBluetooth
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 60
-                    radius: 10
-                    color: (win.mic && !win.micMuted) ? Theme.accent : Theme.glassBg
-                    border.width: 1
-                    border.color: (win.mic && !win.micMuted) ? Theme.accent : Theme.rim
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.margins: 10
-                        spacing: 8
-                        Text {
-                            text: win.micMuted || !win.mic ? "󰍭" : "󰍬"
-                            color: (win.mic && !win.micMuted) ? Theme.accentFg : Theme.text
-                            font.family: Theme.fontMono
-                            font.pixelSize: 19
-                        }
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 1
-                            Text {
-                                text: "Microphone"
-                                color: (win.mic && !win.micMuted) ? Theme.accentFg : Theme.text
-                                font.family: Theme.fontSans
-                                font.pixelSize: 12
-                                font.weight: Font.DemiBold
-                            }
-                            Text {
-                                Layout.fillWidth: true
-                                text: !win.mic ? "None" : (win.micMuted ? "Muted" : "Live")
-                                color: (win.mic && !win.micMuted) ? Theme.accentFg : Theme.muted
-                                opacity: 0.82
-                                font.family: Theme.fontSans
-                                font.pixelSize: 10
-                                elide: Text.ElideRight
-                            }
-                        }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            if (win.mic) Quickshell.execDetached(["wpctl", "set-mute", "@DEFAULT_AUDIO_SOURCE@", "toggle"]);
                         }
                     }
                 }
@@ -820,6 +695,84 @@ PanelWindow {
                         onClicked: win.shell.openOnly("wallpaper", win.screen)
                     }
                 }
+
+                // 7. Screen Record
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 48
+                    radius: 10
+                    color: win.shell.recordingOn ? Theme.crit : (recHover.hovered ? Theme.elevatedBg : Theme.glassBg)
+                    border.width: 1
+                    border.color: win.shell.recordingOn ? Theme.crit : Theme.rim
+                    RowLayout {
+                        anchors.fill: parent; anchors.margins: 10; spacing: 8
+                        Text {
+                            text: win.shell.recordingOn ? "󰓛" : "󰻂"
+                            color: win.shell.recordingOn ? Theme.accentFg : Theme.crit
+                            font.family: Theme.fontMono
+                            font.pixelSize: 18
+                        }
+                        Text {
+                            text: win.shell.recordingOn ? "Stop REC" : "Record"
+                            color: win.shell.recordingOn ? Theme.accentFg : Theme.text
+                            font.family: Theme.fontSans
+                            font.pixelSize: 12
+                            font.weight: Font.DemiBold
+                        }
+                    }
+                    HoverHandler { id: recHover; cursorShape: Qt.PointingHandCursor }
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            win.shell.quickSettingsOpen = false;
+                            Quickshell.execDetached([
+                                Quickshell.env("HOME") + "/.local/bin/screen-record",
+                                win.shell.recordingOn ? "stop" : "region"
+                            ]);
+                        }
+                    }
+                }
+
+                // 8. Keep Awake (Caffeine)
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 48
+                    radius: 10
+                    color: win.shell.keepAwakeOn ? Theme.accent : (awakeHover.hovered ? Theme.elevatedBg : Theme.glassBg)
+                    border.width: 1
+                    border.color: win.shell.keepAwakeOn ? Theme.accent : Theme.rim
+                    RowLayout {
+                        anchors.fill: parent; anchors.margins: 10; spacing: 8
+                        Text {
+                            text: win.shell.keepAwakeOn ? "󰅶" : "󰛊"
+                            color: win.shell.keepAwakeOn ? Theme.accentFg : Theme.text
+                            font.family: Theme.fontMono
+                            font.pixelSize: 18
+                        }
+                        Text {
+                            text: win.shell.keepAwakeOn ? "Awake On" : "Keep Awake"
+                            color: win.shell.keepAwakeOn ? Theme.accentFg : Theme.text
+                            font.family: Theme.fontSans
+                            font.pixelSize: 12
+                            font.weight: Font.DemiBold
+                        }
+                    }
+                    HoverHandler { id: awakeHover; cursorShape: Qt.PointingHandCursor }
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            win.shell.keepAwakeOn = !win.shell.keepAwakeOn;
+                            Quickshell.execDetached([
+                                "sh", "-c",
+                                win.shell.keepAwakeOn
+                                    ? "systemctl --user stop hypridle.service >/dev/null 2>&1 || pkill -x hypridle >/dev/null 2>&1 || true"
+                                    : "systemctl --user start hypridle.service >/dev/null 2>&1 || pgrep -x hypridle >/dev/null 2>&1 || setsid -f hypridle </dev/null >/dev/null 2>&1"
+                            ]);
+                        }
+                    }
+                }
             }
 
             // Power Mode Segmented Selector (tuned-ppd via UPower PowerProfiles)
@@ -884,10 +837,10 @@ PanelWindow {
                 }
             }
 
-            // Sliders (Brightness on laptop OR Mic Gain on PC + Volume with Sound Output chevron)
+            // Sliders (Brightness + Volume with Sound Output chevron)
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: (win.hasBacklight || (!win.hasBacklight && win.mic !== null)) ? 84 : 46
+                Layout.preferredHeight: 84
                 radius: 10
                 color: Theme.glassBg
                 border.width: 1
@@ -899,7 +852,6 @@ PanelWindow {
                     spacing: 10
 
                     RowLayout {
-                        visible: win.hasBacklight
                         Layout.fillWidth: true
                         spacing: 10
                         Text { text: "󰃟"; color: Theme.text; font.family: Theme.fontMono; font.pixelSize: 17 }
@@ -946,63 +898,6 @@ PanelWindow {
                         Item { width: 24; height: 1 }
                     }
 
-                    RowLayout {
-                        visible: !win.hasBacklight && win.mic !== null
-                        Layout.fillWidth: true
-                        spacing: 10
-                        Text {
-                            text: win.micMuted ? "󰍭" : "󰍬"
-                            color: win.micMuted ? Theme.crit : Theme.text
-                            font.family: Theme.fontMono
-                            font.pixelSize: 17
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: Quickshell.execDetached(["wpctl", "set-mute", "@DEFAULT_AUDIO_SOURCE@", "toggle"])
-                            }
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                            height: 18
-                            Rectangle {
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: parent.width; height: 5; radius: 3
-                                color: "#1c2233"
-                                Rectangle {
-                                    width: Math.max(6, parent.width * (Math.min(100, win.micPct) / 100.0))
-                                    height: parent.height; radius: 3
-                                    color: win.micMuted ? Theme.muted : Theme.accent
-                                }
-                            }
-                            Rectangle {
-                                x: Math.max(0, Math.min(parent.width - width, parent.width * (Math.min(100, win.micPct) / 100.0) - width / 2))
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: 14; height: 14; radius: 7
-                                color: Theme.text
-                                border.width: 2; border.color: win.micMuted ? Theme.muted : Theme.accent
-                            }
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                function applyMic(mx) {
-                                    const pct = Math.max(0, Math.min(100, Math.round((mx / width) * 100)));
-                                    Quickshell.execDetached(["wpctl", "set-volume", "-l", "1", "@DEFAULT_AUDIO_SOURCE@", pct + "%"]);
-                                }
-                                onPressed: function(m) { applyMic(m.x); }
-                                onPositionChanged: function(m) { if (pressed) applyMic(m.x); }
-                            }
-                        }
-                        Text {
-                            text: win.micMuted ? "Mute" : (win.micPct + "%")
-                            color: Theme.muted
-                            font.family: Theme.fontSans
-                            font.pixelSize: 11
-                            Layout.preferredWidth: 32
-                            horizontalAlignment: Text.AlignRight
-                        }
-                        Item { width: 24; height: 1 }
-                    }
-
                     VolumeSliderRow {
                         Layout.fillWidth: true
                         showOutputArrow: true
@@ -1024,15 +919,7 @@ PanelWindow {
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
-                Text {
-                    visible: win.batPct < 0
-                    text: win.ethConnected ? ("󰈀 " + (win.ethIp || "Ethernet")) : "󰈂 Offline"
-                    color: win.ethConnected ? Theme.muted : Theme.crit
-                    font.family: Theme.fontSans
-                    font.pixelSize: 11
-                    elide: Text.ElideRight
-                    Layout.fillWidth: true
-                }
+                Item { visible: win.batPct < 0; Layout.fillWidth: true }
 
                 Rectangle {
                     width: 32; height: 30; radius: 8
