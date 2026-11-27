@@ -1,3 +1,4 @@
-# Mondlicht core UI fonts (AUR)
+# Mondlicht core UI fonts & KDE/Qt6 theming bridge (AUR)
 ttf-geist
 ttf-geist-mono
+qt6ct-kde

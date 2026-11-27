@@ -1,0 +1,147 @@
+[ColorEffects:Disabled]
+Color=14,16,24
+ColorAmount=0.55
+ColorEffect=3
+ContrastAmount=0.65
+ContrastEffect=1
+IntensityAmount=0.1
+IntensityEffect=2
+
+[ColorEffects:Inactive]
+ChangeSelectionColor=false
+Color=14,16,24
+ColorAmount=0.025
+ColorEffect=2
+ContrastAmount=0.1
+ContrastEffect=2
+Enable=false
+IntensityAmount=0
+IntensityEffect=0
+
+[Colors:Button]
+BackgroundAlternate=28,33,48
+BackgroundNormal=22,26,38
+DecorationFocus={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+DecorationHover={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+ForegroundActive={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundInactive=126,136,166
+ForegroundLink={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundNegative=224,122,142
+ForegroundNeutral=226,194,133
+ForegroundNormal=220,228,247
+ForegroundPositive=134,197,169
+ForegroundVisited={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+
+[Colors:Complementary]
+BackgroundAlternate=18,21,32
+BackgroundNormal=14,16,24
+DecorationFocus={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+DecorationHover={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+ForegroundActive={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundInactive=126,136,166
+ForegroundLink={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundNegative=224,122,142
+ForegroundNeutral=226,194,133
+ForegroundNormal=220,228,247
+ForegroundPositive=134,197,169
+ForegroundVisited={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+
+[Colors:Header]
+BackgroundAlternate=18,21,32
+BackgroundNormal=14,16,24
+DecorationFocus={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+DecorationHover={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+ForegroundActive={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundInactive=126,136,166
+ForegroundLink={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundNegative=224,122,142
+ForegroundNeutral=226,194,133
+ForegroundNormal=220,228,247
+ForegroundPositive=134,197,169
+ForegroundVisited={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+
+[Colors:Header][Inactive]
+BackgroundAlternate=18,21,32
+BackgroundNormal=14,16,24
+DecorationFocus={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+DecorationHover={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+ForegroundActive={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundInactive=126,136,166
+ForegroundLink={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundNegative=224,122,142
+ForegroundNeutral=226,194,133
+ForegroundNormal=220,228,247
+ForegroundPositive=134,197,169
+ForegroundVisited={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+
+[Colors:Selection]
+BackgroundAlternate={{ colors.secondary_container.default.red }},{{ colors.secondary_container.default.green }},{{ colors.secondary_container.default.blue }}
+BackgroundNormal={{ colors.primary_container.default.red }},{{ colors.primary_container.default.green }},{{ colors.primary_container.default.blue }}
+DecorationFocus={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+DecorationHover={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundActive=220,228,247
+ForegroundInactive=220,228,247
+ForegroundLink={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundNegative=224,122,142
+ForegroundNeutral=226,194,133
+ForegroundNormal=220,228,247
+ForegroundPositive=134,197,169
+ForegroundVisited={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+
+[Colors:Tooltip]
+BackgroundAlternate=18,21,32
+BackgroundNormal=14,16,24
+DecorationFocus={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+DecorationHover={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+ForegroundActive={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundInactive=126,136,166
+ForegroundLink={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundNegative=224,122,142
+ForegroundNeutral=226,194,133
+ForegroundNormal=220,228,247
+ForegroundPositive=134,197,169
+ForegroundVisited={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+
+[Colors:View]
+BackgroundAlternate=12,14,22
+BackgroundNormal=8,9,14
+DecorationFocus={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+DecorationHover={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+ForegroundActive={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundInactive=126,136,166
+ForegroundLink={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundNegative=224,122,142
+ForegroundNeutral=226,194,133
+ForegroundNormal=220,228,247
+ForegroundPositive=134,197,169
+ForegroundVisited={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+
+[Colors:Window]
+BackgroundAlternate=18,21,32
+BackgroundNormal=14,16,24
+DecorationFocus={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+DecorationHover={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+ForegroundActive={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundInactive=126,136,166
+ForegroundLink={{ colors.primary.default.red }},{{ colors.primary.default.green }},{{ colors.primary.default.blue }}
+ForegroundNegative=224,122,142
+ForegroundNeutral=226,194,133
+ForegroundNormal=220,228,247
+ForegroundPositive=134,197,169
+ForegroundVisited={{ colors.tertiary.default.red }},{{ colors.tertiary.default.green }},{{ colors.tertiary.default.blue }}
+
+[General]
+ColorScheme=Mondlicht
+Name=Mondlicht
+shadeSortColumn=true
+
+[KDE]
+contrast=0
+
+[WM]
+activeBackground=14,16,24
+activeBlend=22,26,38
+activeForeground=220,228,247
+inactiveBackground=8,9,14
+inactiveBlend=14,16,24
+inactiveForeground=126,136,166

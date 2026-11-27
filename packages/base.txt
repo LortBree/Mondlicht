@@ -68,9 +68,8 @@ tuned-ppd
 qt5-wayland
 qt6-wayland
 qt5ct
-qt6ct
-kvantum
-kvantum-qt5
+breeze
+breeze-icons
 adw-gtk-theme
 papirus-icon-theme
 capitaine-cursors

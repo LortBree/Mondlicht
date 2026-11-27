@@ -81,6 +81,7 @@ hl.config({
             enabled           = true,
             size              = 4,
             passes            = 1,
+            ignore_opacity    = true,
             new_optimizations = true,
             noise             = 0.0,
             contrast          = 1.0,
@@ -240,6 +241,12 @@ hl.window_rule({
     match  = { title = "^(Mondlicht Settings)$" },
     float  = true,
     center = true,
+})
+
+hl.window_rule({
+    name    = "obsidian-dolphin-glass",
+    match   = { class = "^(org\\.kde\\.dolphin)$" },
+    opacity = "0.90 0.86",
 })
 
 -- Autostart (session daemons managed by systemd --user under graphical-session.target)

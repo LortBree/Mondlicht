@@ -67,12 +67,7 @@ MANAGED_PATHS=(
     ".config/gtk-3.0/gtk.css"
     ".config/gtk-4.0/settings.ini"
     ".config/gtk-4.0/gtk.css"
-    ".config/qt5ct/qt5ct.conf"
-    ".config/qt6ct/qt6ct.conf"
-    ".config/Kvantum/kvantum.kvconfig"
-    ".config/Kvantum/ObsidianLuna/ObsidianLuna.kvconfig"
-    ".config/Kvantum/ObsidianLuna/ObsidianLuna.svg"
-    ".config/kdeglobals"
+    ".local/share/kxmlgui5/dolphin/dolphinui.rc"
     ".config/btop/btop.conf"
     ".config/btop/themes/mondlicht.theme"
     ".zshrc"
@@ -129,8 +124,9 @@ mkdir -p \
     "${HOME}/.config/gtk-3.0" \
     "${HOME}/.config/gtk-4.0" \
     "${HOME}/.config/qt5ct/colors" \
-    "${HOME}/.config/qt6ct/colors" \
-    "${HOME}/.config/Kvantum/ObsidianLuna" \
+    "${HOME}/.config/qt6ct" \
+    "${HOME}/.local/share/color-schemes" \
+    "${HOME}/.local/share/kxmlgui5/dolphin" \
     "${HOME}/.config/btop/themes" \
     "${HOME}/.local/bin" \
     "${HOME}/.local/share/applications" \
@@ -144,6 +140,50 @@ mkdir -p \
 touch "${HOME}/.local/share/mondlicht/notes.md"
 
 stow -R -d "${DOTFILES_DIR}" -t "${HOME}" "${PACKAGES[@]}"
+
+# Clean legacy Kvantum artifacts and replace symlinked Qt/KDE configs with generated user files
+rm -rf "${HOME}/.config/Kvantum" "${HOME}/.config/qt6ct/colors"
+for f in "${HOME}/.config/kdeglobals" "${HOME}/.config/qt6ct/qt6ct.conf" "${HOME}/.config/qt5ct/qt5ct.conf"; do
+    [[ -L "${f}" ]] && rm -f "${f}"
+done
+
+cat <<EOF > "${HOME}/.config/qt6ct/qt6ct.conf"
+[Appearance]
+color_scheme_path=${HOME}/.local/share/color-schemes/Mondlicht.colors
+custom_palette=true
+icon_theme=breeze-dark
+standard_dialogs=default
+style=Breeze
+
+[Fonts]
+fixed="GeistMono Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+general="Geist,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+EOF
+
+cat <<EOF > "${HOME}/.config/qt5ct/qt5ct.conf"
+[Appearance]
+color_scheme_path=${HOME}/.config/qt5ct/colors/Mondlicht.conf
+custom_palette=true
+icon_theme=breeze-dark
+standard_dialogs=default
+style=Fusion
+
+[Fonts]
+fixed="GeistMono Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+general="Geist,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+EOF
+
+if command -v kwriteconfig6 >/dev/null 2>&1; then
+    kwriteconfig6 --file "${HOME}/.config/dolphinrc" --group UiSettings --key ColorScheme "Mondlicht"
+    kwriteconfig6 --file "${HOME}/.config/dolphinrc" --group MainWindow --key MenuBar "Disabled"
+    kwriteconfig6 --file "${HOME}/.config/dolphinrc" --group MainWindow --key ToolBarsMovable "Disabled"
+    kwriteconfig6 --file "${HOME}/.config/dolphinrc" --group General --key ShowFullPath "false"
+    kwriteconfig6 --file "${HOME}/.config/dolphinrc" --group General --key ShowSelectionToggle "true"
+    kwriteconfig6 --file "${HOME}/.config/dolphinrc" --group General --key ShowStatusBar "Small"
+    kwriteconfig6 --file "${HOME}/.config/dolphinrc" --group PlacesPanel --key IconSize "16"
+    kwriteconfig6 --file "${HOME}/.config/dolphinrc" --group IconsMode --key PreviewSize "64"
+    kwriteconfig6 --file "${HOME}/.config/dolphinrc" --group IconsMode --key MaximumTextLines "2"
+fi
 
 # Generate 3 Mondlicht starter wallpapers (2160x1440) if missing
 generate_wallpapers() {
