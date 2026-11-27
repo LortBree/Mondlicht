@@ -34,6 +34,7 @@ done
 # 2. Config, Boot & Multi-Host sanity checks
 check "fastfetch config.jsonc valid JSON" python3 -c "import json; json.load(open('${DOTFILES_DIR}/fastfetch/.config/fastfetch/config.jsonc'))"
 check "matugen config.toml valid TOML" python3 -c "import tomllib; tomllib.load(open('${DOTFILES_DIR}/matugen/.config/matugen/config.toml', 'rb'))"
+check "matugen brave theme template wired" bash -c "test -s '${DOTFILES_DIR}/matugen/.config/matugen/templates/brave-theme.json' && grep -q 'templates\\.brave' '${DOTFILES_DIR}/matugen/.config/matugen/config.toml'"
 check "spotify configs valid TOML" bash -c "python3 -c \"import tomllib; [tomllib.load(open(p, 'rb')) for p in ['${DOTFILES_DIR}/spotify/.config/spotify-launcher.conf', '${DOTFILES_DIR}/spotify/.config/spotify-player/app.toml', '${DOTFILES_DIR}/spotify/.config/spotify-player/theme.toml']]\""
 check "SDDM Main.qml centered passBox & no hardcoded username" bash -c "grep -q 'id: passBox' '${DOTFILES_DIR}/boot/sddm/mondlicht/Main.qml' && grep -q 'anchors.left: passBox.right' '${DOTFILES_DIR}/boot/sddm/mondlicht/Main.qml' && ! grep -q '\"bree\"' '${DOTFILES_DIR}/boot/sddm/mondlicht/Main.qml'"
 check "GRUB theme.txt uses Dark Mondlicht & Geist PF2" bash -c "grep -q 'desktop-color: \"#06070B\"' '${DOTFILES_DIR}/boot/grub/mondlicht/theme.txt' && grep -q 'selected_item_color = \"#DCE4F7\"' '${DOTFILES_DIR}/boot/grub/mondlicht/theme.txt' && grep -q 'Geist Regular 26' '${DOTFILES_DIR}/boot/grub/mondlicht/theme.txt'"

@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "version": "1.0",
+  "name": "Mondlicht (Obsidian Luna)",
+  "description": "Dynamic Obsidian Luna dark theme synced with Mondlicht Matugen accents",
+  "theme": {
+    "colors": {
+      "frame": [8, 9, 14],
+      "frame_inactive": [5, 6, 10],
+      "frame_incognito": [12, 10, 20],
+      "frame_incognito_inactive": [8, 7, 14],
+      "toolbar": [16, 19, 30],
+      "tab_text": [220, 228, 247],
+      "tab_background_text": [132, 144, 173],
+      "tab_background_text_inactive": [104, 114, 140],
+      "bookmark_text": [220, 228, 247],
+      "toolbar_button_icon": [{{ colors.primary.default.red }}, {{ colors.primary.default.green }}, {{ colors.primary.default.blue }}],
+      "omnibox_background": [11, 13, 21],
+      "omnibox_text": [220, 228, 247],
+      "ntp_background": [8, 9, 14],
+      "ntp_text": [220, 228, 247],
+      "ntp_link": [{{ colors.primary.default.red }}, {{ colors.primary.default.green }}, {{ colors.primary.default.blue }}],
+      "button_background": [23, 28, 43]
+    },
+    "tints": {
+      "buttons": [-1, -1, 0.85]
+    }
+  }
+}

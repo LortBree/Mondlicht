@@ -119,6 +119,7 @@ mkdir -p \
     "${HOME}/.config/spicetify/Themes/Mondlicht" \
     "${HOME}/.config/spotify-player" \
     "${HOME}/.config/fuzzel" \
+    "${HOME}/.config/brave-mondlicht-theme" \
     "${HOME}/.config/matugen" \
     "${HOME}/.config/kitty" \
     "${HOME}/.config/fastfetch" \
