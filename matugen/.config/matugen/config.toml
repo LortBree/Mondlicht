@@ -36,3 +36,11 @@ output_path = "~/.config/quickshell/mondlicht/colors.json"
 [templates.brave]
 input_path = "~/.config/matugen/templates/brave-theme.json"
 output_path = "~/.config/brave-mondlicht-theme/manifest.json"
+
+[templates.qt6ct]
+input_path = "~/.config/matugen/templates/qt-colors.conf"
+output_path = "~/.config/qt6ct/colors/ObsidianLuna.conf"
+
+[templates.qt5ct]
+input_path = "~/.config/matugen/templates/qt-colors.conf"
+output_path = "~/.config/qt5ct/colors/ObsidianLuna.conf"

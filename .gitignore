@@ -16,3 +16,5 @@ boot/sddm/mondlicht/wallpaper.png
 boot/grub/mondlicht/*.png
 boot/grub/mondlicht/*.pf2
 boot/grub/mondlicht/icons/
+qt/.config/qt6ct/colors/
+qt/.config/qt5ct/colors/

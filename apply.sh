@@ -69,6 +69,9 @@ MANAGED_PATHS=(
     ".config/gtk-4.0/gtk.css"
     ".config/qt5ct/qt5ct.conf"
     ".config/qt6ct/qt6ct.conf"
+    ".config/Kvantum/kvantum.kvconfig"
+    ".config/Kvantum/ObsidianLuna/ObsidianLuna.kvconfig"
+    ".config/Kvantum/ObsidianLuna/ObsidianLuna.svg"
     ".config/kdeglobals"
     ".config/btop/btop.conf"
     ".config/btop/themes/mondlicht.theme"
@@ -125,8 +128,9 @@ mkdir -p \
     "${HOME}/.config/fastfetch" \
     "${HOME}/.config/gtk-3.0" \
     "${HOME}/.config/gtk-4.0" \
-    "${HOME}/.config/qt5ct" \
-    "${HOME}/.config/qt6ct" \
+    "${HOME}/.config/qt5ct/colors" \
+    "${HOME}/.config/qt6ct/colors" \
+    "${HOME}/.config/Kvantum/ObsidianLuna" \
     "${HOME}/.config/btop/themes" \
     "${HOME}/.local/bin" \
     "${HOME}/.local/share/applications" \

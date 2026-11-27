@@ -69,6 +69,8 @@ qt5-wayland
 qt6-wayland
 qt5ct
 qt6ct
+kvantum
+kvantum-qt5
 adw-gtk-theme
 papirus-icon-theme
 capitaine-cursors

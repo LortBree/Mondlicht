@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="420" viewBox="0 0 320 420">
+  <!-- Panel -->
+  <g id="panel-normal">
+    <rect x="4" y="4" width="40" height="40" rx="6" fill="#0b0d15" stroke="#dce4f7" stroke-opacity="0.14" stroke-width="1"/>
+  </g>
+
+  <!-- Button -->
+  <g id="button-normal">
+    <rect x="52" y="4" width="40" height="28" rx="7" fill="#141826" stroke="#dce4f7" stroke-opacity="0.16" stroke-width="1"/>
+  </g>
+  <g id="button-focused">
+    <rect x="98" y="4" width="40" height="28" rx="7" fill="#171c2b" stroke="#adc6ff" stroke-opacity="0.70" stroke-width="1"/>
+  </g>
+  <g id="button-pressed">
+    <rect x="144" y="4" width="40" height="28" rx="7" fill="#273b7a" stroke="#adc6ff" stroke-opacity="0.85" stroke-width="1"/>
+  </g>
+  <g id="button-toggled">
+    <rect x="190" y="4" width="40" height="28" rx="7" fill="#1f2847" stroke="#adc6ff" stroke-opacity="0.65" stroke-width="1"/>
+  </g>
+  <g id="button-disabled">
+    <rect x="236" y="4" width="40" height="28" rx="7" fill="#0e111b" stroke="#dce4f7" stroke-opacity="0.06" stroke-width="1"/>
+  </g>
+
+  <!-- ToolButton -->
+  <g id="toolbutton-normal">
+    <rect x="52" y="40" width="40" height="28" rx="7" fill="none"/>
+  </g>
+  <g id="toolbutton-focused">
+    <rect x="98" y="40" width="40" height="28" rx="7" fill="#171c2b" stroke="#dce4f7" stroke-opacity="0.18" stroke-width="1"/>
+  </g>
+  <g id="toolbutton-pressed">
+    <rect x="144" y="40" width="40" height="28" rx="7" fill="#273b7a" stroke="#adc6ff" stroke-opacity="0.70" stroke-width="1"/>
+  </g>
+  <g id="toolbutton-toggled">
+    <rect x="190" y="40" width="40" height="28" rx="7" fill="#1c2544" stroke="#adc6ff" stroke-opacity="0.55" stroke-width="1"/>
+  </g>
+
+  <!-- ItemView (Dolphin file/sidebar selection & hover) -->
+  <g id="itemview-normal">
+    <rect x="52" y="76" width="40" height="28" rx="7" fill="none"/>
+  </g>
+  <g id="itemview-focused">
+    <rect x="98" y="76" width="40" height="28" rx="7" fill="#171c2b" stroke="#dce4f7" stroke-opacity="0.14" stroke-width="1"/>
+  </g>
+  <g id="itemview-pressed">
+    <rect x="144" y="76" width="40" height="28" rx="7" fill="#273b7a" stroke="#adc6ff" stroke-opacity="0.65" stroke-width="1"/>
+  </g>
+  <g id="itemview-toggled">
+    <rect x="190" y="76" width="40" height="28" rx="7" fill="#223266" stroke="#adc6ff" stroke-opacity="0.55" stroke-width="1"/>
+  </g>
+
+  <!-- LineEdit -->
+  <g id="lineedit-normal">
+    <rect x="52" y="112" width="40" height="28" rx="7" fill="#08090e" stroke="#dce4f7" stroke-opacity="0.16" stroke-width="1"/>
+  </g>
+  <g id="lineedit-focused">
+    <rect x="98" y="112" width="40" height="28" rx="7" fill="#0b0d15" stroke="#adc6ff" stroke-opacity="0.80" stroke-width="1"/>
+  </g>
+  <g id="lineedit-disabled">
+    <rect x="236" y="112" width="40" height="28" rx="7" fill="#0b0d15" stroke="#dce4f7" stroke-opacity="0.06" stroke-width="1"/>
+  </g>
+
+  <!-- Tab -->
+  <g id="tab-normal">
+    <rect x="52" y="148" width="40" height="26" rx="6" fill="#0b0d15" stroke="#dce4f7" stroke-opacity="0.10" stroke-width="1"/>
+  </g>
+  <g id="tab-focused">
+    <rect x="98" y="148" width="40" height="26" rx="6" fill="#141826" stroke="#dce4f7" stroke-opacity="0.18" stroke-width="1"/>
+  </g>
+  <g id="tab-toggled">
+    <rect x="190" y="148" width="40" height="26" rx="6" fill="#171c2b" stroke="#adc6ff" stroke-opacity="0.60" stroke-width="1"/>
+  </g>
+
+  <!-- Menu & MenuItem -->
+  <g id="menu-normal">
+    <rect x="4" y="184" width="40" height="40" rx="10" fill="#0b0d15" stroke="#dce4f7" stroke-opacity="0.18" stroke-width="1"/>
+  </g>
+  <g id="menuitem-normal">
+    <rect x="52" y="184" width="40" height="24" rx="6" fill="none"/>
+  </g>
+  <g id="menuitem-focused">
+    <rect x="98" y="184" width="40" height="24" rx="6" fill="#223266" stroke="#adc6ff" stroke-opacity="0.50" stroke-width="1"/>
+  </g>
+
+  <!-- ToolTip -->
+  <g id="tooltip-normal">
+    <rect x="4" y="232" width="40" height="28" rx="8" fill="#08090e" stroke="#dce4f7" stroke-opacity="0.22" stroke-width="1"/>
+  </g>
+
+  <!-- Slim Scrollbar Slider -->
+  <g id="scrollbarslider-normal">
+    <rect x="52" y="232" width="12" height="40" rx="6" fill="#dce4f7" fill-opacity="0.22"/>
+  </g>
+  <g id="scrollbarslider-focused">
+    <rect x="72" y="232" width="12" height="40" rx="6" fill="#adc6ff" fill-opacity="0.55"/>
+  </g>
+  <g id="scrollbarslider-pressed">
+    <rect x="92" y="232" width="12" height="40" rx="6" fill="#adc6ff" fill-opacity="0.80"/>
+  </g>
+
+  <!-- Header -->
+  <g id="header-normal">
+    <rect x="52" y="280" width="40" height="24" fill="#10131e" stroke="#dce4f7" stroke-opacity="0.10" stroke-width="1"/>
+  </g>
+  <g id="header-focused">
+    <rect x="98" y="280" width="40" height="24" fill="#171c2b" stroke="#adc6ff" stroke-opacity="0.35" stroke-width="1"/>
+  </g>
+
+  <!-- ProgressBar -->
+  <g id="progressbar-normal">
+    <rect x="52" y="312" width="60" height="10" rx="5" fill="#141826" stroke="#dce4f7" stroke-opacity="0.12" stroke-width="1"/>
+  </g>
+  <g id="progresscontents-normal">
+    <rect x="52" y="328" width="60" height="10" rx="5" fill="#adc6ff"/>
+  </g>
+
+  <!-- CheckBox -->
+  <g id="checkbox-normal">
+    <rect x="52" y="348" width="16" height="16" rx="4" fill="#08090e" stroke="#dce4f7" stroke-opacity="0.30" stroke-width="1.2"/>
+  </g>
+  <g id="checkbox-focused">
+    <rect x="74" y="348" width="16" height="16" rx="4" fill="#141826" stroke="#adc6ff" stroke-opacity="0.85" stroke-width="1.2"/>
+  </g>
+  <g id="checkbox-toggled">
+    <rect x="96" y="348" width="16" height="16" rx="4" fill="#adc6ff" stroke="#adc6ff" stroke-width="1.2"/>
+    <path d="M100 356 L103 359 L109 352" fill="none" stroke="#08090e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- RadioButton -->
+  <g id="radiobutton-normal">
+    <circle cx="60" cy="380" r="7.5" fill="#08090e" stroke="#dce4f7" stroke-opacity="0.30" stroke-width="1.2"/>
+  </g>
+  <g id="radiobutton-focused">
+    <circle cx="82" cy="380" r="7.5" fill="#141826" stroke="#adc6ff" stroke-opacity="0.85" stroke-width="1.2"/>
+  </g>
+  <g id="radiobutton-toggled">
+    <circle cx="104" cy="380" r="7.5" fill="#141826" stroke="#adc6ff" stroke-width="1.4"/>
+    <circle cx="104" cy="380" r="3.8" fill="#adc6ff"/>
+  </g>
+</svg>
