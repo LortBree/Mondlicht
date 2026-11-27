@@ -51,6 +51,7 @@ MANAGED_PATHS=(
     ".config/systemd/user/mondlicht-polkit.service"
     ".config/systemd/user/mondlicht-playerctld.service"
     ".config/systemd/user/mondlicht-udiskie.service"
+    ".config/systemd/user/mondlicht-kwallet-pam.service"
     ".config/spotify-launcher.conf"
     ".config/spicetify/Themes/Mondlicht/color.ini"
     ".config/spicetify/Themes/Mondlicht/user.css"
@@ -236,7 +237,20 @@ if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
         mondlicht-polkit.service \
         mondlicht-playerctld.service \
         mondlicht-udiskie.service \
+        mondlicht-kwallet-pam.service \
         hypridle.service >/dev/null 2>&1 || true
+    if [[ ! -f "${HOME}/.config/kwalletrc" ]] || grep -q '^Default Wallet=Default Keyring$' "${HOME}/.config/kwalletrc" 2>/dev/null; then
+        cat <<'EOF' > "${HOME}/.config/kwalletrc"
+[Wallet]
+Close When Idle=false
+Close on Screensaver=false
+Default Wallet=kdewallet
+Enabled=true
+First Use=false
+Leave Open=true
+Prompt on Open=false
+EOF
+    fi
     systemctl --user restart mondlicht-quickshell.service
     systemctl --user start \
         mondlicht-cliphist-text.service \

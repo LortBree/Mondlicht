@@ -1,0 +1,13 @@
+[Unit]
+Description=Mondlicht KWallet PAM Unlock
+PartOf=graphical-session.target
+After=graphical-session.target
+ConditionPathExists=/usr/lib/pam_kwallet_init
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/pam_kwallet_init
+RemainAfterExit=yes
+
+[Install]
+WantedBy=graphical-session.target

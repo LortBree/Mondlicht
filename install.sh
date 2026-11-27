@@ -205,7 +205,7 @@ detect_hardware() {
 do_uninstall() {
     local pkgs=(hypr quickshell systemd spotify fuzzel matugen kitty fastfetch zsh starship gtk qt btop scripts)
     step_header 1 2 "Stopping Mondlicht user services"
-    for svc in mondlicht-quickshell mondlicht-cliphist-text mondlicht-cliphist-image mondlicht-polkit mondlicht-playerctld mondlicht-udiskie hypridle; do
+    for svc in mondlicht-quickshell mondlicht-cliphist-text mondlicht-cliphist-image mondlicht-polkit mondlicht-playerctld mondlicht-udiskie mondlicht-kwallet-pam hypridle; do
         run_cmd systemctl --user disable --now "${svc}.service" >/dev/null 2>&1 || true
     done
     step_header 2 2 "Unstowing Mondlicht symlinks"
