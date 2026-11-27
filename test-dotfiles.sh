@@ -34,11 +34,14 @@ done
 # 2. Config, Boot & Multi-Host sanity checks
 check "fastfetch config.jsonc valid JSON" python3 -c "import json; json.load(open('${DOTFILES_DIR}/fastfetch/.config/fastfetch/config.jsonc'))"
 check "matugen config.toml valid TOML" python3 -c "import tomllib; tomllib.load(open('${DOTFILES_DIR}/matugen/.config/matugen/config.toml', 'rb'))"
+check "spotify configs valid TOML" bash -c "python3 -c \"import tomllib; [tomllib.load(open(p, 'rb')) for p in ['${DOTFILES_DIR}/spotify/.config/spotify-launcher.conf', '${DOTFILES_DIR}/spotify/.config/spotify-player/app.toml', '${DOTFILES_DIR}/spotify/.config/spotify-player/theme.toml']]\""
 check "SDDM Main.qml centered passBox & no hardcoded username" bash -c "grep -q 'id: passBox' '${DOTFILES_DIR}/boot/sddm/mondlicht/Main.qml' && grep -q 'anchors.left: passBox.right' '${DOTFILES_DIR}/boot/sddm/mondlicht/Main.qml' && ! grep -q '\"bree\"' '${DOTFILES_DIR}/boot/sddm/mondlicht/Main.qml'"
 check "GRUB theme.txt uses Dark Mondlicht & Geist PF2" bash -c "grep -q 'desktop-color: \"#06070B\"' '${DOTFILES_DIR}/boot/grub/mondlicht/theme.txt' && grep -q 'selected_item_color = \"#DCE4F7\"' '${DOTFILES_DIR}/boot/grub/mondlicht/theme.txt' && grep -q 'Geist Regular 26' '${DOTFILES_DIR}/boot/grub/mondlicht/theme.txt'"
 check "Hyprlock matches SDDM rounding 8" bash -c "grep -q 'rounding = 8' '${DOTFILES_DIR}/hypr/.config/hypr/hyprlock.conf'"
 check "QuickSettingsPanel supports optional backlight & PC mode" bash -c "grep -q 'hasBacklight' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/QuickSettingsPanel.qml' && grep -q 'keepAwakeOn' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/QuickSettingsPanel.qml' && grep -q 'defaultAudioSource' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/QuickSettingsPanel.qml' && grep -q 'hasWifi' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/QuickSettingsPanel.qml' && grep -q 'ethConnected' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/StatusSidebar.qml' && grep -q 'defaultAudioSource' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/StatusSidebar.qml'"
 check "Quickshell supports multi-monitor ambient & hover panels" bash -c "grep -q 'Variants' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/shell.qml' && grep -q 'Quickshell.screens' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/shell.qml' && grep -q 'Hyprland.monitorFor' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/shell.qml' && grep -q 'ambientScreen' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/shell.qml'"
+check "Unified Settings LazyLoader & UX upgrades present" bash -c "grep -q 'LazyLoader' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/shell.qml' && grep -q 'FloatingWindow' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/SettingsWindow.qml' && grep -q 'user-prefs.lua' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/SettingsWindow.qml' && grep -q 'cliphist' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/ClipboardPopover.qml' && grep -q 'evalMath' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/AppLauncher.qml' && grep -q 'Close Window' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/BottomDock.qml' && grep -q 'Copy Path' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/NotificationCenter.qml' && grep -q 'trackLen' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/ClockPopover.qml'"
+check "Systemd user units & Keep Awake control wired" bash -c "grep -q 'qs -c mondlicht' '${DOTFILES_DIR}/systemd/.config/systemd/user/mondlicht-quickshell.service' && grep -q 'systemctl --user stop hypridle.service' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/QuickSettingsPanel.qml' && grep -q 'systemctl --user stop hypridle.service' '${DOTFILES_DIR}/quickshell/.config/quickshell/mondlicht/SettingsWindow.qml'"
 check "hyprland.lua loads optional host module via pcall" bash -c "grep -q 'pcall(require, \"host\")' '${DOTFILES_DIR}/hypr/.config/hypr/hyprland.lua' && ! grep -q 'eDP-1' '${DOTFILES_DIR}/hypr/.config/hypr/hyprland.lua'"
 LEAK_PATTERN='/home/''bree|"br''ee"|obsidian-''luna|Rei-''Obsidian|is''kra|ис''кра'
 check "No personal path or legacy leaks" bash -c "! grep -rn -iE '${LEAK_PATTERN}' '${DOTFILES_DIR}' --exclude-dir=.git --exclude='*.png' --exclude='*.pf2'"
@@ -51,8 +54,8 @@ for pkgfile in base apps laptop aur-base aur-apps; do
     check "package list ${pkgfile}.txt" test -s "${DOTFILES_DIR}/packages/${pkgfile}.txt"
 done
 
-check "install.sh --dry-run (pc-standard + nvidia)" "${DOTFILES_DIR}/install.sh" --profile pc-standard --gpu nvidia --with-apps --with-boot --dry-run --yes
-check "install.sh --dry-run (laptop-hidpi + intel)" "${DOTFILES_DIR}/install.sh" --profile laptop-hidpi --gpu intel --with-apps --dry-run --yes
+check "install.sh --dry-run (pc-standard + nvidia + tuning)" "${DOTFILES_DIR}/install.sh" --profile pc-standard --gpu nvidia --with-apps --with-tuning --with-boot --dry-run --yes
+check "install.sh --dry-run (laptop-hidpi + intel + no-tuning)" "${DOTFILES_DIR}/install.sh" --profile laptop-hidpi --gpu intel --with-apps --no-tuning --dry-run --yes
 
 if [[ "${REPO_ONLY}" -eq 0 ]]; then
     for asset in background.png geist_26.pf2 geist_mono_16.pf2 select_nw.png select_n.png select_ne.png select_w.png select_c.png select_e.png select_sw.png select_s.png select_se.png; do
@@ -66,6 +69,10 @@ if [[ "${REPO_ONLY}" -eq 0 ]]; then
         ".config/quickshell/mondlicht/shell.qml"
         ".config/quickshell/mondlicht/Theme.qml"
         ".config/quickshell/mondlicht/QuickSettingsPanel.qml"
+        ".config/quickshell/mondlicht/SettingsWindow.qml"
+        ".config/quickshell/mondlicht/ClipboardPopover.qml"
+        ".config/systemd/user/mondlicht-quickshell.service"
+        ".config/spotify-launcher.conf"
         ".config/fuzzel/fuzzel.ini"
         ".config/matugen/config.toml"
         ".config/kitty/kitty.conf"

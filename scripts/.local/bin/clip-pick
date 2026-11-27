@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if qs -c mondlicht ipc call shell toggleClipboard >/dev/null 2>&1; then
+    exit 0
+fi
+
 selection="$(cliphist list | fuzzel --dmenu --prompt " 󰅌 Clipboard: " --width 55 --lines 12 || true)"
 [[ -z "${selection}" ]] && exit 0
 printf '%s\n' "${selection}" | cliphist decode | wl-copy

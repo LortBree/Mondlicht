@@ -10,7 +10,7 @@ Scope {
     // 1. Floating Top-Right Toasts
     PanelWindow {
         id: toastWin
-        screen: root.shell.ambientScreen || root.shell.focusedScreen
+        screen: root.shell.targetScreen
         anchors {
             top: true
             right: true
@@ -36,13 +36,25 @@ Scope {
             Repeater {
                 model: root.shell.toastItems
                 Rectangle {
+                    id: toastCard
                     required property var modelData
+                    readonly property string detectedPath: {
+                        const txt = (modelData.summary || "") + "\n" + (modelData.body || "");
+                        const m = txt.match(/(\/(?:home|tmp|var|mnt|media)\/[^\s'"]+)/);
+                        return m ? m[1] : "";
+                    }
                     Layout.fillWidth: true
-                    implicitHeight: toastInner.implicitHeight + 20
+                    implicitHeight: toastInner.implicitHeight + 22
                     radius: 12
                     color: Theme.voidBg
                     border.width: 1
                     border.color: Theme.rim
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.shell.removeToast(modelData)
+                    }
 
                     ColumnLayout {
                         id: toastInner
@@ -52,7 +64,7 @@ Scope {
                             verticalCenter: parent.verticalCenter
                             margins: 12
                         }
-                        spacing: 3
+                        spacing: 4
 
                         RowLayout {
                             Layout.fillWidth: true
@@ -94,12 +106,100 @@ Scope {
                             maximumLineCount: 3
                             elide: Text.ElideRight
                         }
-                    }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.shell.removeToast(modelData)
+                        RowLayout {
+                            visible: (modelData.actions && modelData.actions.length > 0) || toastCard.detectedPath.length > 0
+                            Layout.fillWidth: true
+                            Layout.topMargin: 3
+                            spacing: 6
+
+                            Repeater {
+                                model: modelData.actions || []
+                                Rectangle {
+                                    required property var modelData
+                                    implicitWidth: actTxt.implicitWidth + 16
+                                    implicitHeight: 24
+                                    radius: 6
+                                    color: actHov.hovered ? Theme.accent : Theme.elevatedBg
+                                    border.width: 1
+                                    border.color: Theme.rim
+                                    Text {
+                                        id: actTxt
+                                        anchors.centerIn: parent
+                                        text: modelData.text || modelData.identifier || "Action"
+                                        color: actHov.hovered ? Theme.accentFg : Theme.text
+                                        font.family: Theme.fontSans
+                                        font.pixelSize: 10
+                                        font.weight: Font.DemiBold
+                                    }
+                                    HoverHandler { id: actHov; cursorShape: Qt.PointingHandCursor }
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            modelData.invoke();
+                                            root.shell.removeToast(toastCard.modelData);
+                                        }
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                visible: toastCard.detectedPath.length > 0
+                                implicitWidth: openLbl.implicitWidth + 16
+                                implicitHeight: 24
+                                radius: 6
+                                color: openHov.hovered ? Theme.accent : Theme.elevatedBg
+                                border.width: 1
+                                border.color: Theme.rim
+                                Text {
+                                    id: openLbl
+                                    anchors.centerIn: parent
+                                    text: "Open"
+                                    color: openHov.hovered ? Theme.accentFg : Theme.text
+                                    font.family: Theme.fontSans
+                                    font.pixelSize: 10
+                                    font.weight: Font.DemiBold
+                                }
+                                HoverHandler { id: openHov; cursorShape: Qt.PointingHandCursor }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        Quickshell.execDetached(["xdg-open", toastCard.detectedPath]);
+                                        root.shell.removeToast(toastCard.modelData);
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                visible: toastCard.detectedPath.length > 0
+                                implicitWidth: cpyLbl.implicitWidth + 16
+                                implicitHeight: 24
+                                radius: 6
+                                color: cpyHov.hovered ? Theme.accent : Theme.elevatedBg
+                                border.width: 1
+                                border.color: Theme.rim
+                                Text {
+                                    id: cpyLbl
+                                    anchors.centerIn: parent
+                                    text: "Copy Path"
+                                    color: cpyHov.hovered ? Theme.accentFg : Theme.text
+                                    font.family: Theme.fontSans
+                                    font.pixelSize: 10
+                                    font.weight: Font.DemiBold
+                                }
+                                HoverHandler { id: cpyHov; cursorShape: Qt.PointingHandCursor }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        Quickshell.execDetached(["wl-copy", toastCard.detectedPath]);
+                                        root.shell.removeToast(toastCard.modelData);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

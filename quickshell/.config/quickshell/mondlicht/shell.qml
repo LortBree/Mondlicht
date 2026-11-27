@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
 import Quickshell.Services.Notifications
+import Quickshell.Services.UPower
 
 ShellRoot {
     id: root
@@ -52,9 +53,16 @@ ShellRoot {
     property bool wallpaperOpen: false
     property bool powerOpen: false
     property bool guideOpen: false
+    property bool clipboardOpen: false
+    property bool settingsOpen: false
     property bool nightLightOn: false
     property bool keepAwakeOn: false
     property bool dndOn: false
+    property bool recordingOn: false
+    property int recordingSecs: 0
+    property bool ecoModeOn: false
+    property int lastBatAlertLevel: 100
+    property int lastPowerState: -1
     property string osdKind: "volume"
     property int osdToken: 0
 
@@ -71,6 +79,53 @@ ShellRoot {
         root.wallpaperOpen = (panel === "wallpaper") ? !root.wallpaperOpen : false;
         root.powerOpen = (panel === "power") ? !root.powerOpen : false;
         root.guideOpen = (panel === "guide") ? !root.guideOpen : false;
+        root.clipboardOpen = (panel === "clipboard") ? !root.clipboardOpen : false;
+    }
+
+    function openSettings() {
+        root.openOnly("");
+        root.settingsOpen = true;
+    }
+
+    function checkBattery() {
+        const dev = UPower.displayDevice;
+        if (!dev || !dev.ready || !dev.isLaptopBattery) return;
+        const st = dev.state;
+        if (root.lastPowerState !== -1 && st !== root.lastPowerState) {
+            if (st === UPowerDeviceState.Discharging) {
+                PowerProfiles.profile = PowerProfile.PowerSaver;
+            } else if (st === UPowerDeviceState.Charging || st === UPowerDeviceState.FullyCharged) {
+                PowerProfiles.profile = PowerProfile.Balanced;
+            }
+        }
+        root.lastPowerState = st;
+
+        const pct = Math.round(dev.percentage * 100);
+        if (st === UPowerDeviceState.Discharging) {
+            if (pct <= 10 && root.lastBatAlertLevel > 10) {
+                root.lastBatAlertLevel = 10;
+                Quickshell.execDetached(["notify-send", "-u", "critical", "-a", "Mondlicht", "Battery Critical (" + pct + "%)", "Plug in charger immediately"]);
+            } else if (pct <= 20 && root.lastBatAlertLevel > 20) {
+                root.lastBatAlertLevel = 20;
+                Quickshell.execDetached(["notify-send", "-a", "Mondlicht", "Battery Low (" + pct + "%)", "Switched to Power Saver"]);
+            }
+        } else if (st === UPowerDeviceState.Charging || st === UPowerDeviceState.FullyCharged || pct > 22) {
+            root.lastBatAlertLevel = 100;
+        }
+    }
+
+    Timer {
+        interval: 1000
+        running: root.recordingOn
+        repeat: true
+        onTriggered: root.recordingSecs++
+    }
+
+    Connections {
+        target: UPower.displayDevice
+        function onReadyChanged() { root.checkBattery(); }
+        function onStateChanged() { root.checkBattery(); }
+        function onPercentageChanged() { root.checkBattery(); }
     }
 
     function removeToast(notif) {
@@ -137,7 +192,7 @@ ShellRoot {
             if (root.launcherOpen) {
                 root.overviewOpenedByCycle = false;
                 root.openOnly("overview");
-            } else if (root.overviewOpen || root.quickSettingsOpen || root.clockOpen || root.notifOpen || root.wallpaperOpen || root.powerOpen || root.guideOpen) {
+            } else if (root.overviewOpen || root.quickSettingsOpen || root.clockOpen || root.notifOpen || root.wallpaperOpen || root.powerOpen || root.guideOpen || root.clipboardOpen) {
                 root.openOnly("");
             }
         }
@@ -148,7 +203,17 @@ ShellRoot {
         function toggleWallpaper(): void { root.openOnly("wallpaper"); }
         function togglePower(): void { root.openOnly("power"); }
         function toggleGuide(): void { root.openOnly("guide"); }
+        function toggleClipboard(): void { root.openOnly("clipboard"); }
+        function openSettings(): void { root.openSettings(); }
+        function toggleSettings(): void {
+            if (!root.settingsOpen) root.openOnly("");
+            root.settingsOpen = !root.settingsOpen;
+        }
         function setNightLight(on: bool): void { root.nightLightOn = on; }
+        function setRecording(on: bool): void {
+            if (on && !root.recordingOn) root.recordingSecs = 0;
+            root.recordingOn = on;
+        }
         function showOsd(kind: string): void { root.osdKind = kind || "volume"; root.osdToken++; }
         function closeAll(): void { root.openOnly(""); }
     }
@@ -175,5 +240,11 @@ ShellRoot {
     PowerMenu { shell: root }
     TopLeftGuide { shell: root }
     ActivitiesOverview { shell: root }
+    ClipboardPopover { shell: root }
     OsdPill { shell: root }
+
+    LazyLoader {
+        active: root.settingsOpen
+        SettingsWindow { shell: root }
+    }
 }

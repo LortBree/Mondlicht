@@ -70,6 +70,26 @@ PanelWindow {
     readonly property int batPct: UPower.displayDevice && UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : -1
     readonly property bool batCharging: UPower.displayDevice && UPower.displayDevice.state === UPowerDeviceState.Charging
 
+    function fmtDuration(secs) {
+        if (!secs || secs <= 60) return "";
+        const h = Math.floor(secs / 3600);
+        const m = Math.round((secs % 3600) / 60);
+        return h > 0 ? (h + "h " + m + "m") : (m + "m");
+    }
+
+    function fmtBatFooter() {
+        if (win.batPct < 0) return "";
+        const dev = UPower.displayDevice;
+        const secs = win.batCharging ? (dev ? dev.timeToFull : 0) : (dev ? dev.timeToEmpty : 0);
+        const dur = fmtDuration(secs);
+        const rate = dev && dev.changeRate ? Math.abs(dev.changeRate) : 0;
+        let out = (win.batCharging ? "󰂄 " : "󰁹 ") + win.batPct + "%";
+        if (dur) out += " · " + dur;
+        else if (win.batCharging) out += " · Charging";
+        if (rate >= 0.5) out += " · " + rate.toFixed(1) + "W";
+        return out;
+    }
+
     function splitTerse(line) {
         return line.replace(/\\:/g, "\u0001").split(":").map(s => s.replace(/\u0001/g, ":"));
     }
@@ -547,8 +567,8 @@ PanelWindow {
                             Quickshell.execDetached([
                                 "sh", "-c",
                                 win.shell.keepAwakeOn
-                                    ? "pkill -x hypridle >/dev/null 2>&1 || true"
-                                    : "pgrep -x hypridle >/dev/null 2>&1 || setsid -f hypridle </dev/null >/dev/null 2>&1"
+                                    ? "systemctl --user stop hypridle.service >/dev/null 2>&1 || pkill -x hypridle >/dev/null 2>&1 || true"
+                                    : "systemctl --user start hypridle.service >/dev/null 2>&1 || pgrep -x hypridle >/dev/null 2>&1 || setsid -f hypridle </dev/null >/dev/null 2>&1"
                             ]);
                         }
                     }
@@ -997,10 +1017,11 @@ PanelWindow {
 
                 Text {
                     visible: win.batPct >= 0
-                    text: (win.batCharging ? "󰂄 " : "󰁹 ") + win.batPct + (win.batCharging ? "% · Charging" : "%")
+                    text: win.fmtBatFooter()
                     color: Theme.muted
                     font.family: Theme.fontSans
                     font.pixelSize: 11
+                    elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
                 Text {
@@ -1011,6 +1032,49 @@ PanelWindow {
                     font.pixelSize: 11
                     elide: Text.ElideRight
                     Layout.fillWidth: true
+                }
+
+                Rectangle {
+                    width: 32; height: 30; radius: 8
+                    color: win.shell.ecoModeOn ? Theme.accent : (ecoHov.hovered ? Theme.elevatedBg : Theme.glassBg)
+                    border.width: 1; border.color: win.shell.ecoModeOn ? Theme.accent : Theme.rim
+                    Text {
+                        anchors.centerIn: parent
+                        text: "󰌪"
+                        color: win.shell.ecoModeOn ? Theme.accentFg : Theme.text
+                        font.family: Theme.fontMono
+                        font.pixelSize: 15
+                    }
+                    HoverHandler { id: ecoHov; cursorShape: Qt.PointingHandCursor }
+                    MouseArea {
+                        anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            win.shell.ecoModeOn = !win.shell.ecoModeOn;
+                            const v = win.shell.ecoModeOn ? "false" : "true";
+                            Quickshell.execDetached([
+                                "hyprctl", "eval",
+                                "hl.config({ decoration = { blur = { enabled = " + v + " }, shadow = { enabled = " + v + " }, glow = { enabled = " + v + " } } })"
+                            ]);
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: 32; height: 30; radius: 8
+                    color: cfgHov.hovered ? Theme.elevatedBg : Theme.glassBg
+                    border.width: 1; border.color: Theme.rim
+                    Image {
+                        anchors.centerIn: parent
+                        width: 18; height: 18
+                        sourceSize: Qt.size(36, 36)
+                        smooth: true
+                        source: "file://" + Quickshell.env("HOME") + "/.local/share/icons/hicolor/scalable/apps/mondlicht-settings.svg"
+                    }
+                    HoverHandler { id: cfgHov; cursorShape: Qt.PointingHandCursor }
+                    MouseArea {
+                        anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                        onClicked: win.shell.openSettings()
+                    }
                 }
 
                 Rectangle {

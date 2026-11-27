@@ -137,6 +137,9 @@ hl.config({
     },
 })
 
+-- Persistent user overrides written by Mondlicht Settings
+pcall(require, "user-prefs")
+
 -- Lightweight 60fps animations
 hl.curve("obsidianOut", { type = "bezier", points = { {0.16, 1}, {0.30, 1} } })
 hl.curve("obsidianQuick", { type = "bezier", points = { {0.20, 0}, {0.10, 1} } })
@@ -228,15 +231,17 @@ hl.window_rule({
     pin   = true,
 })
 
--- Autostart
+hl.window_rule({
+    name   = "mondlicht-settings-float",
+    match  = { title = "^(Mondlicht Settings)$" },
+    float  = true,
+    center = true,
+})
+
+-- Autostart (session daemons managed by systemd --user under graphical-session.target)
 hl.on("hyprland.start", function()
     hl.exec_cmd("sh -c 'awww query >/dev/null 2>&1 || awww-daemon'")
     hl.exec_cmd("sh -c 'sleep 0.4 && awww restore >/dev/null 2>&1 || true'")
-    hl.exec_cmd("qs -c mondlicht")
-    hl.exec_cmd("hypridle")
-    hl.exec_cmd("/usr/lib/polkit-kde-authentication-agent-1")
-    hl.exec_cmd("wl-paste --type text --watch cliphist store")
-    hl.exec_cmd("wl-paste --type image --watch cliphist store")
 end)
 
 -- Keybindings (macOS-friendly: SUPER = Cmd)
@@ -258,6 +263,7 @@ hl.bind("CTRL + SHIFT + right",        hl.dsp.window.move({ workspace = "r+1" })
 hl.bind(mainMod .. " + SHIFT + Page_Up",   hl.dsp.window.move({ workspace = "r-1" }))
 hl.bind(mainMod .. " + SHIFT + Page_Down", hl.dsp.window.move({ workspace = "r+1" }))
 hl.bind(mainMod .. " + A",             hl.dsp.exec_cmd("qs -c mondlicht ipc call shell toggleQuickSettings"))
+hl.bind(mainMod .. " + comma",         hl.dsp.exec_cmd("~/.local/bin/mondlicht-settings"))
 hl.bind(mainMod .. " + slash",         hl.dsp.exec_cmd("qs -c mondlicht ipc call shell toggleGuide"), { dont_inhibit = true })
 hl.bind(mainMod .. " + T",             hl.dsp.exec_cmd("qs -c mondlicht ipc call shell toggleClock"))
 hl.bind(mainMod .. " + N",             hl.dsp.exec_cmd("qs -c mondlicht ipc call shell toggleNotifications"))
@@ -272,6 +278,8 @@ hl.bind(mainMod .. " + L",             hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mainMod .. " + Escape",        hl.dsp.exec_cmd("qs -c mondlicht ipc call shell togglePower"))
 hl.bind(mainMod .. " + SHIFT + 4",     hl.dsp.exec_cmd("~/.local/bin/screenshot region"))
 hl.bind(mainMod .. " + SHIFT + 3",     hl.dsp.exec_cmd("~/.local/bin/screenshot full"))
+hl.bind(mainMod .. " + SHIFT + 5",     hl.dsp.exec_cmd("~/.local/bin/screen-record region"))
+hl.bind(mainMod .. " + SHIFT + 6",     hl.dsp.exec_cmd("~/.local/bin/screen-record full"))
 hl.bind("Print",                       hl.dsp.exec_cmd("~/.local/bin/screenshot region"))
 hl.bind("SHIFT + Print",               hl.dsp.exec_cmd("~/.local/bin/screenshot full"))
 

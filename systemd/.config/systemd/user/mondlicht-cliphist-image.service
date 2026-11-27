@@ -1,0 +1,14 @@
+[Unit]
+Description=Mondlicht Clipboard Watcher (image)
+PartOf=graphical-session.target
+After=graphical-session.target
+ConditionEnvironment=WAYLAND_DISPLAY
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/wl-paste --type image --watch /usr/bin/cliphist store
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target

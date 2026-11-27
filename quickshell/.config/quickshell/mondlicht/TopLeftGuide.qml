@@ -51,11 +51,13 @@ PanelWindow {
         { keys: "Cmd + Enter", desc: "Open Terminal (Kitty)" },
         { keys: "Cmd + E", desc: "Open File Manager (Dolphin)" },
         { keys: "Cmd + A", desc: "Win11 Quick Settings (Wi-Fi/BT/Audio)" },
+        { keys: "Cmd + ,", desc: "Open Mondlicht Settings App" },
         { keys: "Cmd + T", desc: "Clock, Calendar, Media & Quick Notes" },
         { keys: "Cmd + N", desc: "Notification Center" },
         { keys: "Cmd + Shift + W", desc: "Wallpaper Preview Switcher" },
         { keys: "Cmd + Shift + V", desc: "Clipboard History" },
         { keys: "Cmd + Shift + 4 / 3", desc: "Screenshot Region / Fullscreen" },
+        { keys: "Cmd + Shift + 5 / 6", desc: "Record Screen Region / Full (toggle)" },
         { keys: "Cmd + B", desc: "Toggle Night Light (4200K)" },
         { keys: "Cmd + Ctrl + Q / Cmd + L", desc: "Lock Screen (Hyprlock)" },
         { keys: "Cmd + Esc / Cmd + M", desc: "Power Menu / Logout" }

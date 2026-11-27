@@ -24,9 +24,38 @@ PanelWindow {
 
     property int selectedIndex: 0
     property var appResults: []
+    property string calcResult: ""
+    property string runCmd: ""
+
+    function evalMath(raw) {
+        let s = (raw || "").trim();
+        const explicit = s.startsWith("=");
+        if (explicit) s = s.slice(1).trim();
+        if (!s || s.length > 96) return "";
+        if (!/^[0-9+\-*/().%\s]+$/.test(s)) return "";
+        if (!explicit && !/[+\-*/%]/.test(s)) return "";
+        try {
+            const val = Function("return (" + s + ")")();
+            if (typeof val !== "number" || !isFinite(val)) return "";
+            return Number.isInteger(val) ? String(val) : String(Number(val.toFixed(6)));
+        } catch (e) {
+            return "";
+        }
+    }
 
     function refreshResults() {
-        const q = searchInput.text.trim().toLowerCase();
+        const raw = searchInput.text.trim();
+        if (raw.startsWith(">")) {
+            win.runCmd = raw.slice(1).trim();
+            win.calcResult = "";
+            win.appResults = [];
+            win.selectedIndex = 0;
+            return;
+        }
+        win.runCmd = "";
+        win.calcResult = win.evalMath(raw);
+
+        const q = raw.toLowerCase();
         const all = DesktopEntries.applications.values;
         const out = [];
         for (let i = 0; i < all.length; i++) {
@@ -42,6 +71,19 @@ PanelWindow {
     }
 
     function launchSelected() {
+        const raw = searchInput.text.trim();
+        if (raw.startsWith(">")) {
+            if (win.runCmd.length > 0) {
+                Quickshell.execDetached(["sh", "-c", win.runCmd]);
+                win.shell.launcherOpen = false;
+            }
+            return;
+        }
+        if (win.calcResult !== "" && (raw.startsWith("=") || win.appResults.length === 0)) {
+            Quickshell.execDetached(["wl-copy", win.calcResult]);
+            win.shell.launcherOpen = false;
+            return;
+        }
         if (win.appResults.length > 0 && win.selectedIndex >= 0 && win.selectedIndex < win.appResults.length) {
             win.appResults[win.selectedIndex].execute();
             win.shell.launcherOpen = false;
@@ -146,12 +188,68 @@ PanelWindow {
                             anchors.fill: parent
                             verticalAlignment: Text.AlignVCenter
                             visible: searchInput.text.length === 0
-                            text: "Search applications..."
+                            text: "Search apps, calculate (=2+2), or run (> cmd)..."
                             color: Theme.muted
                             font.family: Theme.fontSans
                             font.pixelSize: 13
                         }
                     }
+                }
+            }
+
+            // Spotlight instant math or quick-command banner
+            Rectangle {
+                visible: win.calcResult !== "" || searchInput.text.trim().startsWith(">")
+                Layout.fillWidth: true
+                Layout.preferredHeight: 54
+                radius: 12
+                color: spotHov.hovered ? Theme.elevatedBg : Theme.glassBg
+                border.width: 1
+                border.color: Theme.accent
+                Behavior on color { ColorAnimation { duration: 120 } }
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 14
+                    anchors.rightMargin: 14
+                    spacing: 12
+
+                    Text {
+                        text: searchInput.text.trim().startsWith(">") ? "󰆍" : "󰪚"
+                        color: Theme.accent
+                        font.family: Theme.fontMono
+                        font.pixelSize: 18
+                    }
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 1
+                        Text {
+                            text: searchInput.text.trim().startsWith(">")
+                                ? (win.runCmd ? ("Run: " + win.runCmd) : "Quick Command")
+                                : ("= " + win.calcResult)
+                            color: Theme.text
+                            font.family: Theme.fontMono
+                            font.pixelSize: 15
+                            font.weight: Font.Bold
+                            elide: Text.ElideRight
+                            Layout.fillWidth: true
+                        }
+                        Text {
+                            text: searchInput.text.trim().startsWith(">")
+                                ? (win.runCmd ? "Press Enter to execute in background" : "Type a shell command after >")
+                                : "Press Enter or click to copy result"
+                            color: Theme.muted
+                            font.family: Theme.fontSans
+                            font.pixelSize: 10
+                        }
+                    }
+                }
+
+                HoverHandler { id: spotHov; cursorShape: Qt.PointingHandCursor }
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: win.launchSelected()
                 }
             }
 

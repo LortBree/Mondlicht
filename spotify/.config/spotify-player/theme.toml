@@ -1,0 +1,33 @@
+[[themes]]
+name = "mondlicht"
+[themes.palette]
+background = "#08090e"
+foreground = "#dce4f7"
+black = "#10131e"
+red = "#e07a8e"
+green = "#86c5a9"
+yellow = "#e2c285"
+blue = "#adc6ff"
+magenta = "#debcdf"
+cyan = "#8bbce8"
+white = "#dce4f7"
+bright_black = "#8490ad"
+bright_red = "#ffb4ab"
+bright_green = "#a4dec3"
+bright_yellow = "#f0d7a3"
+bright_blue = "#b7c4ff"
+bright_magenta = "#e4bada"
+bright_cyan = "#a6d3f7"
+bright_white = "#f0f4ff"
+
+[themes.component_style]
+selection = { fg = "Black", bg = "BrightBlue", modifiers = ["Bold"] }
+playback_track = { fg = "BrightBlue", modifiers = ["Bold"] }
+playback_artists = { fg = "BrightMagenta" }
+playback_album = { fg = "BrightBlack" }
+playback_metadata = { fg = "BrightBlack" }
+playback_progress_bar = { fg = "BrightBlue", bg = "Black" }
+current_playing = { fg = "Green", modifiers = ["Bold"] }
+page_desc = { fg = "BrightBlue", modifiers = ["Bold"] }
+table_header = { fg = "BrightMagenta", modifiers = ["Bold"] }
+border = { fg = "BrightBlack" }

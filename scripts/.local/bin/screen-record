@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MODE="${1:-region}"
+OUT_DIR="${HOME}/Videos/Recordings"
+STATE_FILE="/tmp/mondlicht-recording.file"
+mkdir -p "${OUT_DIR}"
+
+if [[ "${MODE}" == "--status" ]]; then
+    if pgrep -x wf-recorder >/dev/null 2>&1; then
+        printf '{"recording":true,"file":"%s"}\n' "$(cat "${STATE_FILE}" 2>/dev/null || true)"
+    else
+        printf '{"recording":false}\n'
+    fi
+    exit 0
+fi
+
+stop_recording() {
+    local saved=""
+    [[ -f "${STATE_FILE}" ]] && saved="$(cat "${STATE_FILE}" 2>/dev/null || true)"
+    pkill -INT -x wf-recorder >/dev/null 2>&1 || true
+    for _ in $(seq 1 30); do
+        pgrep -x wf-recorder >/dev/null 2>&1 || break
+        sleep 0.1
+    done
+    rm -f "${STATE_FILE}"
+    qs -c mondlicht ipc call shell setRecording false >/dev/null 2>&1 || true
+    if [[ -n "${saved}" ]]; then
+        timeout 2 notify-send -a "Mondlicht" "Recording Saved" "${saved}" >/dev/null 2>&1 || true
+    else
+        timeout 2 notify-send -a "Mondlicht" "Recording Stopped" >/dev/null 2>&1 || true
+    fi
+}
+
+if pgrep -x wf-recorder >/dev/null 2>&1; then
+    stop_recording
+    exit 0
+fi
+
+if [[ "${MODE}" == "stop" ]]; then
+    qs -c mondlicht ipc call shell setRecording false >/dev/null 2>&1 || true
+    exit 0
+fi
+
+if ! command -v wf-recorder >/dev/null 2>&1; then
+    timeout 3 notify-send -u critical -a "Mondlicht" "Screen Recorder Missing" "Install wf-recorder first: sudo pacman -S wf-recorder" >/dev/null 2>&1 || true
+    exit 1
+fi
+
+GEOM=""
+if [[ "${MODE}" == "region" ]]; then
+    GEOM="$(slurp || true)"
+    [[ -z "${GEOM}" ]] && exit 0
+elif [[ "${MODE}" != "full" ]]; then
+    printf 'Usage: %s [region|full|stop|--status]\n' "$0" >&2
+    exit 1
+fi
+
+OUT_FILE="${OUT_DIR}/rec-$(date +%Y%m%d-%H%M%S).mp4"
+
+AUDIO_FLAG=("--audio")
+if command -v pactl >/dev/null 2>&1; then
+    SINK="$(pactl get-default-sink 2>/dev/null || true)"
+    if [[ -n "${SINK}" ]] && pactl list short sources 2>/dev/null | awk '{print $2}' | grep -qxF "${SINK}.monitor"; then
+        AUDIO_FLAG=("--audio=${SINK}.monitor")
+    fi
+fi
+
+BASE_ARGS=("${AUDIO_FLAG[@]}" "-f" "${OUT_FILE}")
+[[ -n "${GEOM}" ]] && BASE_ARGS=("-g" "${GEOM}" "${BASE_ARGS[@]}")
+
+start_recorder() {
+    setsid -f wf-recorder "$@" "${BASE_ARGS[@]}" </dev/null >/dev/null 2>&1
+    sleep 0.35
+    pgrep -x wf-recorder >/dev/null 2>&1
+}
+
+STARTED=0
+if [[ -r /dev/dri/renderD128 ]] && start_recorder -d /dev/dri/renderD128 -c h264_vaapi -p qp=22; then
+    STARTED=1
+elif start_recorder -c libx264 -p preset=veryfast -p crf=23; then
+    STARTED=1
+fi
+
+if [[ "${STARTED}" -eq 1 ]]; then
+    printf '%s\n' "${OUT_FILE}" > "${STATE_FILE}"
+    qs -c mondlicht ipc call shell setRecording true >/dev/null 2>&1 || true
+    timeout 2 notify-send -a "Mondlicht" "Recording Started" "$(basename "${OUT_FILE}")" >/dev/null 2>&1 || true
+else
+    timeout 3 notify-send -u critical -a "Mondlicht" "Recording Failed" "Could not launch wf-recorder" >/dev/null 2>&1 || true
+    exit 1
+fi

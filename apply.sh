@@ -2,7 +2,7 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGES=(hypr quickshell fuzzel matugen kitty fastfetch zsh starship gtk qt btop scripts)
+PACKAGES=(hypr quickshell systemd spotify fuzzel matugen kitty fastfetch zsh starship gtk qt btop scripts)
 DRY_RUN=0
 
 for arg in "$@"; do
@@ -25,6 +25,9 @@ MANAGED_PATHS=(
     ".config/hypr/hyprlock.conf"
     ".config/autostart/nm-applet.desktop"
     ".config/autostart/blueman.desktop"
+    ".config/autostart/baloo_file.desktop"
+    ".config/autostart/polkit-kde-authentication-agent-1.desktop"
+    ".config/autostart/print-applet.desktop"
     ".config/quickshell/mondlicht/Theme.qml"
     ".config/quickshell/mondlicht/shell.qml"
     ".config/quickshell/mondlicht/TopCapsule.qml"
@@ -40,6 +43,19 @@ MANAGED_PATHS=(
     ".config/quickshell/mondlicht/TopLeftGuide.qml"
     ".config/quickshell/mondlicht/ActivitiesOverview.qml"
     ".config/quickshell/mondlicht/OsdPill.qml"
+    ".config/quickshell/mondlicht/SettingsWindow.qml"
+    ".config/quickshell/mondlicht/ClipboardPopover.qml"
+    ".config/systemd/user/mondlicht-quickshell.service"
+    ".config/systemd/user/mondlicht-cliphist-text.service"
+    ".config/systemd/user/mondlicht-cliphist-image.service"
+    ".config/systemd/user/mondlicht-polkit.service"
+    ".config/systemd/user/mondlicht-playerctld.service"
+    ".config/systemd/user/mondlicht-udiskie.service"
+    ".config/spotify-launcher.conf"
+    ".config/spicetify/Themes/Mondlicht/color.ini"
+    ".config/spicetify/Themes/Mondlicht/user.css"
+    ".config/spotify-player/app.toml"
+    ".config/spotify-player/theme.toml"
     ".config/fuzzel/fuzzel.ini"
     ".config/matugen/config.toml"
     ".config/matugen/templates"
@@ -61,6 +77,10 @@ MANAGED_PATHS=(
     ".local/bin/screenshot"
     ".local/bin/night-light"
     ".local/bin/power-menu"
+    ".local/bin/screen-record"
+    ".local/bin/mondlicht-settings"
+    ".local/share/applications/mondlicht-settings.desktop"
+    ".local/share/icons/hicolor/scalable/apps/mondlicht-settings.svg"
 )
 
 BACKUP_DIR="${HOME}/.mondlicht-backup-$(date +%Y%m%d-%H%M%S)"
@@ -94,6 +114,9 @@ mkdir -p \
     "${HOME}/.config/hypr" \
     "${HOME}/.config/autostart" \
     "${HOME}/.config/quickshell/mondlicht" \
+    "${HOME}/.config/systemd/user" \
+    "${HOME}/.config/spicetify/Themes/Mondlicht" \
+    "${HOME}/.config/spotify-player" \
     "${HOME}/.config/fuzzel" \
     "${HOME}/.config/matugen" \
     "${HOME}/.config/kitty" \
@@ -104,10 +127,13 @@ mkdir -p \
     "${HOME}/.config/qt6ct" \
     "${HOME}/.config/btop/themes" \
     "${HOME}/.local/bin" \
+    "${HOME}/.local/share/applications" \
+    "${HOME}/.local/share/icons/hicolor/scalable/apps" \
     "${HOME}/.local/share/mondlicht" \
     "${HOME}/.cache" \
     "${HOME}/Pictures/Wallpapers" \
-    "${HOME}/Pictures/Screenshots"
+    "${HOME}/Pictures/Screenshots" \
+    "${HOME}/Videos/Recordings"
 
 touch "${HOME}/.local/share/mondlicht/notes.md"
 
@@ -189,17 +215,37 @@ if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
     pkill -x waybar >/dev/null 2>&1 || true
     pkill -x swaync >/dev/null 2>&1 || true
     pkill -x nm-applet >/dev/null 2>&1 || true
-    pkill -f 'blueman-(applet|tray)' >/dev/null 2>&1 || true
+    pkill -f '[b]lueman-(applet|tray)' >/dev/null 2>&1 || true
 
+    if command -v balooctl6 >/dev/null 2>&1; then
+        balooctl6 disable >/dev/null 2>&1 || true
+        balooctl6 purge >/dev/null 2>&1 || true
+    fi
+    systemctl --user stop 'app-print\x2dapplet@autostart.service' >/dev/null 2>&1 || pkill -f '[p]rint-applet' >/dev/null 2>&1 || true
+
+    # Hand off session daemons to systemd --user units
     pkill -x qs >/dev/null 2>&1 || true
-    sleep 0.2
-    launch_detached "qs -c mondlicht"
-
-    pgrep -x hypridle >/dev/null 2>&1 || launch_detached "hypridle"
-    pgrep -f 'polkit-kde-authentication-agent-1' >/dev/null 2>&1 || launch_detached "/usr/lib/polkit-kde-authentication-agent-1"
-    if ! pgrep -f 'cliphist store' >/dev/null 2>&1; then
-        launch_detached "wl-paste --type text --watch cliphist store"
-        launch_detached "wl-paste --type image --watch cliphist store"
+    pkill -x hypridle >/dev/null 2>&1 || true
+    pkill -f '[p]olkit-kde-authentication-agent-1' >/dev/null 2>&1 || true
+    pkill -f '[c]liphist store' >/dev/null 2>&1 || true
+    systemctl --user daemon-reload
+    systemctl --user enable \
+        mondlicht-quickshell.service \
+        mondlicht-cliphist-text.service \
+        mondlicht-cliphist-image.service \
+        mondlicht-polkit.service \
+        mondlicht-playerctld.service \
+        mondlicht-udiskie.service \
+        hypridle.service >/dev/null 2>&1 || true
+    systemctl --user restart mondlicht-quickshell.service
+    systemctl --user start \
+        mondlicht-cliphist-text.service \
+        mondlicht-cliphist-image.service \
+        mondlicht-polkit.service \
+        mondlicht-playerctld.service \
+        hypridle.service
+    if [[ -x /usr/bin/udiskie ]]; then
+        systemctl --user start mondlicht-udiskie.service
     fi
     systemctl --user try-restart xdg-desktop-portal >/dev/null 2>&1 || true
 fi

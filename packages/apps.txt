@@ -5,6 +5,9 @@ okular
 imv
 mpv
 spotify-launcher
+spotify-player
+fwupd
+kdeconnect
 docker
 docker-buildx
 docker-compose

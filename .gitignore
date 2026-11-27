@@ -1,5 +1,6 @@
 # Machine-specific generated Hyprland host preset
 hypr/.config/hypr/host.lua
+hypr/.config/hypr/user-prefs.lua
 
 # Generated matugen color files (rebuilt dynamically on wallpaper change)
 hypr/.config/hypr/colors.lua

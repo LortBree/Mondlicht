@@ -22,6 +22,9 @@ zsh-syntax-highlighting
 starship
 stow
 git
+pacman-contrib
+udiskie
+kwallet-pam
 wget
 vim
 nano
@@ -38,10 +41,12 @@ ufw
 grim
 slurp
 satty
+wf-recorder
 wl-clipboard
 cliphist
 imagemagick
 playerctl
+upower
 pipewire
 pipewire-alsa
 pipewire-pulse

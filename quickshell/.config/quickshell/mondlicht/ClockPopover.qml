@@ -311,12 +311,34 @@ PanelWindow {
                     spacing: 10
 
                     Rectangle {
+                        id: mediaCard
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 92
+                        Layout.preferredHeight: 110
                         radius: 10
                         color: Theme.glassBg
                         border.width: 1
                         border.color: Theme.rim
+
+                        property int posTick: 0
+                        readonly property real trackLen: (win.player && win.player.length > 0) ? win.player.length : 0
+                        readonly property real trackPos: {
+                            const _t = posTick;
+                            return (win.player && win.player.position >= 0) ? win.player.position : 0;
+                        }
+
+                        function fmtSecs(sec) {
+                            const s = Math.max(0, Math.floor(sec || 0));
+                            const m = Math.floor(s / 60);
+                            const r = s % 60;
+                            return m + ":" + (r < 10 ? "0" : "") + r;
+                        }
+
+                        Timer {
+                            interval: 1000
+                            repeat: true
+                            running: win.visible && !!win.player && win.player.playbackState === MprisPlaybackState.Playing
+                            onTriggered: mediaCard.posTick++
+                        }
 
                         RowLayout {
                             anchors.fill: parent
@@ -365,9 +387,45 @@ PanelWindow {
                                     font.pixelSize: 11
                                     elide: Text.ElideRight
                                 }
+                                ColumnLayout {
+                                    visible: mediaCard.trackLen > 0
+                                    Layout.fillWidth: true
+                                    Layout.topMargin: 2
+                                    spacing: 2
+                                    Rectangle {
+                                        Layout.fillWidth: true
+                                        height: 3
+                                        radius: 2
+                                        color: Theme.elevatedBg
+                                        Rectangle {
+                                            height: parent.height
+                                            radius: 2
+                                            color: Theme.accent
+                                            width: mediaCard.trackLen > 0
+                                                ? Math.min(parent.width, Math.max(0, parent.width * (mediaCard.trackPos / mediaCard.trackLen)))
+                                                : 0
+                                        }
+                                    }
+                                    RowLayout {
+                                        Layout.fillWidth: true
+                                        Text {
+                                            text: mediaCard.fmtSecs(mediaCard.trackPos)
+                                            color: Theme.muted
+                                            font.family: Theme.fontMono
+                                            font.pixelSize: 9
+                                            Layout.fillWidth: true
+                                        }
+                                        Text {
+                                            text: mediaCard.fmtSecs(mediaCard.trackLen)
+                                            color: Theme.muted
+                                            font.family: Theme.fontMono
+                                            font.pixelSize: 9
+                                        }
+                                    }
+                                }
                                 RowLayout {
                                     spacing: 8
-                                    Layout.topMargin: 4
+                                    Layout.topMargin: 2
                                     Rectangle {
                                         width: 26; height: 24; radius: 6
                                         color: pHov.hovered ? Theme.elevatedBg : "transparent"

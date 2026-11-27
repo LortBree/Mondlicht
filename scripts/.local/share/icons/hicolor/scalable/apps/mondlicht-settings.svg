@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#14192A"/>
+      <stop offset="100%" stop-color="#080A10"/>
+    </linearGradient>
+    <linearGradient id="gearGrad" x1="0.15" y1="0.1" x2="0.85" y2="0.9">
+      <stop offset="0%" stop-color="#DCE4F7"/>
+      <stop offset="100%" stop-color="#8B9BC2"/>
+    </linearGradient>
+    <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="55%" stop-color="#B7C4FF" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#B7C4FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="moonDisc" cx="38%" cy="34%" r="68%">
+      <stop offset="0%" stop-color="#F7FAFF"/>
+      <stop offset="58%" stop-color="#CBD8FF"/>
+      <stop offset="100%" stop-color="#8DA3DD"/>
+    </radialGradient>
+    <clipPath id="moonClip">
+      <circle cx="32" cy="32" r="9.6"/>
+    </clipPath>
+  </defs>
+
+  <!-- Obsidian squircle tile -->
+  <rect x="3" y="3" width="58" height="58" rx="15" fill="url(#bgGrad)" stroke="#DCE4F7" stroke-opacity="0.18" stroke-width="1.5"/>
+
+  <!-- 8-tooth geometric gear ring (outer 22.4, root 17.2, center hole 12.2) -->
+  <path fill="url(#gearGrad)" fill-rule="evenodd" d="
+    M 28.5,10.0 L 35.5,10.0 L 36.1,15.7 A 17.2,17.2 0 0 1 39.8,17.2 L 44.3,13.6 L 49.2,18.5 L 45.6,23.0
+    A 17.2,17.2 0 0 1 47.1,26.7 L 52.8,27.3 L 52.8,34.3 L 47.1,34.9 A 17.2,17.2 0 0 1 45.6,38.6
+    L 49.2,43.1 L 44.3,48.0 L 39.8,44.4 A 17.2,17.2 0 0 1 36.1,45.9 L 35.5,51.6 L 28.5,51.6
+    L 27.9,45.9 A 17.2,17.2 0 0 1 24.2,44.4 L 19.7,48.0 L 14.8,43.1 L 18.4,38.6
+    A 17.2,17.2 0 0 1 16.9,34.9 L 11.2,34.3 L 11.2,27.3 L 16.9,26.7 A 17.2,17.2 0 0 1 18.4,23.0
+    L 14.8,18.5 L 19.7,13.6 L 24.2,17.2 A 17.2,17.2 0 0 1 27.9,15.7 Z
+    M 32,19.4 A 11.4,11.4 0 1 0 32,42.2 A 11.4,11.4 0 1 0 32,19.4 Z
+  "/>
+
+  <!-- Centered Full Moon core -->
+  <g transform="translate(0,-1.2)">
+    <circle cx="32" cy="32" r="13" fill="url(#moonGlow)"/>
+    <circle cx="32" cy="32" r="9.6" fill="url(#moonDisc)"/>
+    <g clip-path="url(#moonClip)" fill="#778EC9" fill-opacity="0.22">
+      <circle cx="28.2" cy="29.0" r="3.4"/>
+      <circle cx="35.8" cy="34.2" r="2.6"/>
+      <circle cx="33.5" cy="27.2" r="1.7"/>
+      <circle cx="29.4" cy="36.0" r="1.5"/>
+    </g>
+    <circle cx="32" cy="32" r="9.6" fill="none" stroke="#FFFFFF" stroke-opacity="0.28" stroke-width="0.7"/>
+  </g>
+</svg>

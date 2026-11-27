@@ -1,0 +1,59 @@
+:root {
+  --font-family: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --spice-border: rgba(220, 228, 247, 0.14);
+}
+
+body,
+button,
+input {
+  font-family: var(--font-family) !important;
+}
+
+/* Debloat: hide Upgrade/Explore Premium, Download App, promo banners & friend feed */
+button[title*="Upgrade"],
+button[aria-label*="Upgrade"],
+a[href*="/download"],
+[data-testid="upgrade-button"],
+.main-topBar-UpgradeButton,
+.main-buddyFeed-container,
+aside[aria-label="Friend Activity"],
+[data-testid="home-page"] section[aria-label*="Sponsored"],
+[data-testid="leaderboard-ad"],
+.main-leaderboardComponent-container,
+.main-billboardComponent-container {
+  display: none !important;
+}
+
+/* Mondlicht smoked-glass surfaces & lunar rims */
+.Root__nav-bar,
+.Root__main-view,
+.Root__now-playing-bar {
+  border: 1px solid var(--spice-border);
+  border-radius: 12px;
+}
+
+.Root__top-container {
+  gap: 8px;
+  padding: 8px;
+  background-color: #05060a !important;
+}
+
+.main-card-card,
+.view-homeShortcutsGrid-shortcut {
+  background-color: var(--spice-card) !important;
+  border: 1px solid var(--spice-border) !important;
+  border-radius: 10px !important;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+
+.main-card-card:hover,
+.view-homeShortcutsGrid-shortcut:hover {
+  background-color: var(--spice-highlight) !important;
+  border-color: rgba(173, 198, 255, 0.35) !important;
+}
+
+/* Subtle slim scrollbars */
+.os-scrollbar-handle {
+  background: rgba(220, 228, 247, 0.18) !important;
+  border-radius: 999px !important;
+}

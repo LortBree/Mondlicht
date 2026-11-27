@@ -1,5 +1,6 @@
 # Optional daily & dev applications (AUR)
 brave-bin
+spicetify-cli
 antigravity
 antigravity-cli
 antigravity-ide

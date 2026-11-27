@@ -1,0 +1,14 @@
+[Unit]
+Description=Mondlicht Polkit Authentication Agent (KDE)
+PartOf=graphical-session.target
+After=graphical-session.target
+ConditionEnvironment=WAYLAND_DISPLAY
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/polkit-kde-authentication-agent-1
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target
