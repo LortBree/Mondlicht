@@ -354,6 +354,9 @@ else
             trap - EXIT
         fi
     fi
+    if pacman -Qq qt6ct 2>/dev/null | grep -qx 'qt6ct'; then
+        run_cmd sudo pacman -Rdd --noconfirm qt6ct
+    fi
     run_cmd "${aur_bin}" -S --needed --noconfirm "${AUR_PKGS[@]}"
 fi
 

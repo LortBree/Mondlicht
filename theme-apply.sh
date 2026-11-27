@@ -82,6 +82,10 @@ if [[ "${INSTALL_PKGS}" -eq 1 ]]; then
     fi
 
     if [[ -n "${AUR_HELPER}" ]]; then
+        # Replace vanilla qt6ct cleanly because pacman --noconfirm answers N to [y/N] conflict prompts
+        if pacman -Qq qt6ct 2>/dev/null | grep -qx 'qt6ct'; then
+            run_step sudo pacman -Rdd --noconfirm qt6ct
+        fi
         run_step "${AUR_HELPER}" -S --needed --noconfirm "${AUR_PKGS[@]}"
     else
         printf 'Warning: neither yay nor paru found; install AUR packages manually: %s\n' "${AUR_PKGS[*]}" >&2
