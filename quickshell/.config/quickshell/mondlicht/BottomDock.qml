@@ -102,13 +102,26 @@ PanelWindow {
         id: hideTimer
         interval: 450
         onTriggered: {
-            if (!win.ctxOpen) win.activeHover = false;
+            if (!win.ctxOpen && !rootHover.hovered && win.hoverText.length === 0) win.activeHover = false;
         }
     }
 
     Item {
         id: fullArea
         anchors.fill: parent
+
+        HoverHandler {
+            id: rootHover
+            onHoveredChanged: {
+                if (hovered) {
+                    hideTimer.stop();
+                    win.activeHover = true;
+                } else {
+                    win.hoverText = "";
+                    hideTimer.restart();
+                }
+            }
+        }
 
         MouseArea {
             anchors.fill: parent
@@ -122,7 +135,7 @@ PanelWindow {
                 bottom: parent.bottom
                 horizontalCenter: parent.horizontalCenter
             }
-            width: 340
+            width: Math.max(360, dockBox.implicitWidth + 24)
             height: 6
         }
 
@@ -132,21 +145,8 @@ PanelWindow {
                 bottom: parent.bottom
                 horizontalCenter: parent.horizontalCenter
             }
-            width: Math.max(340, dockBox.implicitWidth + 16)
+            width: Math.max(360, dockBox.implicitWidth + 24)
             height: 82
-
-            HoverHandler {
-                id: rootHover
-                onHoveredChanged: {
-                    if (hovered) {
-                        hideTimer.stop();
-                        win.activeHover = true;
-                    } else {
-                        win.hoverText = "";
-                        hideTimer.restart();
-                    }
-                }
-            }
         }
 
         // Hover Tooltip Pill
