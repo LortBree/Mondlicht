@@ -117,9 +117,9 @@ PanelWindow {
 
             transform: Translate {
                 y: win.revealed ? 0 : -54
-                Behavior on y { NumberAnimation { duration: 360; easing.type: Easing.OutExpo } }
+                Behavior on y { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
             }
-            Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+            Behavior on opacity { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
             Behavior on color { ColorAnimation { duration: 160 } }
             Behavior on border.color { ColorAnimation { duration: 280; easing.type: Easing.OutCubic } }
 
@@ -206,7 +206,7 @@ PanelWindow {
                                     scale: 0.7
 
                                     ParallelAnimation {
-                                        running: win.shell.recordingOn
+                                        running: win.revealed && win.shell.recordingOn
                                         loops: Animation.Infinite
                                         NumberAnimation { target: pulseRing; property: "scale"; from: 0.7; to: 1.9; duration: 1400; easing.type: Easing.OutCubic }
                                         NumberAnimation { target: pulseRing; property: "opacity"; from: 0.65; to: 0.0; duration: 1400; easing.type: Easing.OutCubic }
@@ -265,7 +265,7 @@ PanelWindow {
                         Behavior on scale { NumberAnimation { duration: 260; easing.type: Easing.OutExpo } }
 
                         SequentialAnimation on opacity {
-                            running: win.mediaPlaying
+                            running: win.revealed && win.mediaPlaying
                             loops: Animation.Infinite
                             NumberAnimation { to: 0.35; duration: 950; easing.type: Easing.InOutSine }
                             NumberAnimation { to: 1.0; duration: 950; easing.type: Easing.InOutSine }

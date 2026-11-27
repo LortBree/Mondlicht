@@ -18,16 +18,16 @@ PanelWindow {
     property bool activeHover: false
     readonly property bool revealed: activeHover || (win.shell.overviewOpen && win.screen === win.shell.targetScreen)
 
-    // Fixed window dimensions + Region mask prevents pointer-leave resize flicker
+    // Fixed window dimensions + un-animated Region mask eliminates resize buffer churn
     implicitWidth: 64
-    implicitHeight: Math.max(280, rail.implicitHeight + 24)
+    implicitHeight: 520
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.namespace: "obsidian-shell"
 
     mask: Region {
-        item: win.revealed ? fullArea : edgeSensor
+        item: win.revealed ? railHit : edgeSensor
     }
 
     function normalWorkspaces() {
@@ -54,6 +54,16 @@ PanelWindow {
             }
             width: 6
             height: 240
+        }
+
+        Item {
+            id: railHit
+            anchors {
+                left: parent.left
+                verticalCenter: parent.verticalCenter
+            }
+            width: 64
+            height: Math.max(120, col.implicitHeight + 36)
         }
 
         HoverHandler {
@@ -85,10 +95,10 @@ PanelWindow {
 
             transform: Translate {
                 x: win.revealed ? 0 : -60
-                Behavior on x { NumberAnimation { duration: 380; easing.type: Easing.OutExpo } }
+                Behavior on x { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
             }
-            Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
-            Behavior on implicitHeight { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+            Behavior on opacity { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+            Behavior on implicitHeight { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
             ColumnLayout {
                 id: col

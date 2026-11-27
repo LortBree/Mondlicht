@@ -63,6 +63,15 @@ PanelWindow {
         wipeProc.running = true;
     }
 
+    Component.onCompleted: {
+        if (win.shell.clipboardOpen) {
+            searchInput.text = "";
+            loadProc.running = false;
+            loadProc.running = true;
+            searchInput.forceActiveFocus();
+        }
+    }
+
     onVisibleChanged: {
         if (win.shell.clipboardOpen) {
             searchInput.text = "";
@@ -160,8 +169,8 @@ print(json.dumps(items))`
         opacity: win.shell.clipboardOpen ? 1.0 : 0.0
         scale: win.shell.clipboardOpen ? 1.0 : 0.96
 
-        Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: 240; easing.type: Easing.OutExpo } }
+        Behavior on opacity { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
+        Behavior on scale { NumberAnimation { duration: 170; easing.type: Easing.OutCubic } }
 
         MouseArea {
             anchors.fill: parent

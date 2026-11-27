@@ -79,15 +79,15 @@ hl.config({
 
         blur = {
             enabled           = true,
-            size              = 6,
-            passes            = 2,
+            size              = 4,
+            passes            = 1,
             new_optimizations = true,
-            noise             = 0.025,
-            contrast          = 1.08,
-            brightness        = 0.72,
-            vibrancy          = 0.20,
-            vibrancy_darkness = 0.40,
-            popups            = true,
+            noise             = 0.0,
+            contrast          = 1.0,
+            brightness        = 0.80,
+            vibrancy          = 0.0,
+            vibrancy_darkness = 0.0,
+            popups            = false,
         },
     },
 
@@ -172,19 +172,23 @@ hl.gesture({
     end,
 })
 
--- Layer rules: Obsidian smoked-glass blur on shell surfaces, launcher, and notifications
+-- Layer rules: frosted blur on fuzzel launcher; Quickshell owns its own glass/animations cleanly
+hl.layer_rule({
+    name         = "obsidian-blur-launcher",
+    match        = { namespace = "^(launcher)$" },
+    blur         = true,
+    ignore_alpha = 0.50,
+})
 for _, ns in ipairs({
     "obsidian-shell",
     "obsidian-popover",
     "obsidian-dock",
     "obsidian-overview",
-    "launcher",
 }) do
     hl.layer_rule({
-        name         = "obsidian-blur-" .. ns,
-        match        = { namespace = "^(" .. ns .. ")$" },
-        blur         = true,
-        ignore_alpha = 0.50,
+        name    = "obsidian-noanim-" .. ns,
+        match   = { namespace = "^(" .. ns .. ")$" },
+        no_anim = true,
     })
 end
 

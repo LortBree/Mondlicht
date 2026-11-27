@@ -39,6 +39,13 @@ PanelWindow {
         }
     }
 
+    Component.onCompleted: {
+        if (win.shell.powerOpen) {
+            win.selectedIndex = 0;
+            card.forceActiveFocus();
+        }
+    }
+
     onVisibleChanged: {
         if (win.shell.powerOpen) {
             win.selectedIndex = 0;
@@ -63,8 +70,8 @@ PanelWindow {
         opacity: win.shell.powerOpen ? 1.0 : 0.0
         scale: win.shell.powerOpen ? 1.0 : 0.92
 
-        Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: 320; easing.type: Easing.OutExpo } }
+        Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+        Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
         Keys.onEscapePressed: win.shell.powerOpen = false
         Keys.onLeftPressed: win.selectedIndex = (win.selectedIndex - 1 + actions.length) % actions.length

@@ -247,9 +247,9 @@ Scope {
 
             transform: Translate {
                 x: root.shell.notifOpen ? 0 : 54
-                Behavior on x { NumberAnimation { duration: 360; easing.type: Easing.OutExpo } }
+                Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
             }
-            Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+            Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
             Keys.onEscapePressed: root.shell.notifOpen = false
 

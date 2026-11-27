@@ -43,6 +43,14 @@ PanelWindow {
         }
     }
 
+    Component.onCompleted: {
+        if (win.shell.wallpaperOpen) {
+            cacheFile.reload();
+            listProc.running = true;
+            card.forceActiveFocus();
+        }
+    }
+
     onVisibleChanged: {
         if (win.shell.wallpaperOpen) {
             cacheFile.reload();
@@ -73,9 +81,9 @@ PanelWindow {
 
         transform: Translate {
             y: win.shell.wallpaperOpen ? 0 : 110
-            Behavior on y { NumberAnimation { duration: 420; easing.type: Easing.OutExpo } }
+            Behavior on y { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
         }
-        Behavior on opacity { NumberAnimation { duration: 280; easing.type: Easing.OutCubic } }
+        Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
         Keys.onEscapePressed: win.shell.wallpaperOpen = false
 

@@ -236,12 +236,28 @@ ShellRoot {
     QuickSettingsPanel { shell: root }
     NotificationCenter { shell: root }
     AppLauncher { shell: root }
-    WallpaperPicker { shell: root }
-    PowerMenu { shell: root }
-    TopLeftGuide { shell: root }
     ActivitiesOverview { shell: root }
-    ClipboardPopover { shell: root }
     OsdPill { shell: root }
+
+    LazyLoader {
+        active: root.wallpaperOpen
+        WallpaperPicker { shell: root }
+    }
+
+    LazyLoader {
+        active: root.powerOpen
+        PowerMenu { shell: root }
+    }
+
+    LazyLoader {
+        active: root.guideOpen
+        TopLeftGuide { shell: root }
+    }
+
+    LazyLoader {
+        active: root.clipboardOpen
+        ClipboardPopover { shell: root }
+    }
 
     LazyLoader {
         active: root.settingsOpen

@@ -87,6 +87,14 @@ PanelWindow {
         }
     }
 
+    Component.onCompleted: {
+        if (win.shell.guideOpen) {
+            pkgFilter.text = "";
+            if (win.allPackages.length === 0) pkgProc.running = true;
+            card.forceActiveFocus();
+        }
+    }
+
     Connections {
         target: win.shell
         function onGuideOpenChanged() {
@@ -115,8 +123,8 @@ PanelWindow {
         opacity: win.shell.guideOpen ? 1.0 : 0.0
         scale: win.shell.guideOpen ? 1.0 : 0.94
 
-        Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: 300; easing.type: Easing.OutExpo } }
+        Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+        Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
         Keys.onEscapePressed: win.shell.guideOpen = false
 

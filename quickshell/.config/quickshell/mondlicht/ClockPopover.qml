@@ -118,9 +118,9 @@ PanelWindow {
 
         transform: Translate {
             y: win.shell.clockOpen ? 0 : -56
-            Behavior on y { NumberAnimation { duration: 400; easing.type: Easing.OutExpo } }
+            Behavior on y { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
         }
-        Behavior on opacity { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
+        Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
         Keys.onEscapePressed: win.shell.clockOpen = false
 

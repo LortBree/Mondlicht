@@ -313,9 +313,9 @@ PanelWindow {
             opacity: win.revealed ? 1.0 : 0.0
             transform: Translate {
                 y: win.revealed ? 0 : 82
-                Behavior on y { NumberAnimation { duration: 420; easing.type: Easing.OutExpo } }
+                Behavior on y { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
             }
-            Behavior on opacity { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
+            Behavior on opacity { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
             Behavior on implicitWidth { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
 
             Rectangle {

@@ -22,16 +22,16 @@ PanelWindow {
     property bool activeHover: false
     readonly property bool revealed: activeHover || ((win.shell.quickSettingsOpen || win.shell.notifOpen || win.shell.overviewOpen) && win.screen === win.shell.targetScreen)
 
-    // Fixed window bounds + Region mask prevents pointer-leave resize flicker
+    // Fixed window bounds + un-animated Region mask eliminates resize buffer churn
     implicitWidth: 68
-    implicitHeight: Math.max(300, rail.implicitHeight + 24)
+    implicitHeight: 460
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.namespace: "obsidian-shell"
 
     mask: Region {
-        item: win.revealed ? fullArea : edgeSensor
+        item: win.revealed ? railHit : edgeSensor
     }
 
     property bool hasWifi: true
@@ -80,7 +80,7 @@ PanelWindow {
 
     Timer {
         interval: 15000
-        running: true
+        running: win.revealed
         repeat: true
         triggeredOnStart: true
         onTriggered: stateProc.running = true
@@ -108,6 +108,16 @@ PanelWindow {
             }
             width: 6
             height: 260
+        }
+
+        Item {
+            id: railHit
+            anchors {
+                right: parent.right
+                verticalCenter: parent.verticalCenter
+            }
+            width: 68
+            height: Math.max(160, col.implicitHeight + 36)
         }
 
         HoverHandler {
@@ -139,10 +149,10 @@ PanelWindow {
 
             transform: Translate {
                 x: win.revealed ? 0 : 62
-                Behavior on x { NumberAnimation { duration: 380; easing.type: Easing.OutExpo } }
+                Behavior on x { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
             }
-            Behavior on opacity { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
-            Behavior on implicitHeight { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+            Behavior on opacity { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+            Behavior on implicitHeight { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
             ColumnLayout {
                 id: col
