@@ -143,10 +143,10 @@ PanelWindow {
                 '  local sp = hl.get_active_special_workspace(); ' +
                 '  if w.workspace.special then ' +
                 '    if not sp or sp.name ~= w.workspace.name then ' +
-                '      hl.dispatch(hl.dsp.workspace.toggle_special(w.workspace.name:gsub("^special:", ""))); ' +
+                '      hl.dispatch(hl.dsp.workspace.toggle_special((w.workspace.name:gsub("^special:", "")))); ' +
                 '    end; ' +
                 '  else ' +
-                '    if sp then hl.dispatch(hl.dsp.workspace.toggle_special(sp.name:gsub("^special:", ""))); end; ' +
+                '    if sp then hl.dispatch(hl.dsp.workspace.toggle_special((sp.name:gsub("^special:", "")))); end; ' +
                 '    hl.dispatch(hl.dsp.focus({ workspace = w.workspace.id })); ' +
                 '  end; ' +
                 'end; ' +
